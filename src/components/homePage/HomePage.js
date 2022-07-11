@@ -17,11 +17,13 @@ export const HomePage = () => {
   }, []);
   return (
     <div className="flex justify-center">
-      <div className="flex justify-start mt-8 w-5/6">
+      <div className="flex justify-start mt-8 w-2/3">
         <div className="w-2/3">
           <p>Feed</p>
           {posts.map((post) => (
-            <Post post={post} />
+            <div key={post._id}>
+              <Post post={post} />
+            </div>
           ))}
         </div>
         <div className="w-1/3 bg-gray-200">
