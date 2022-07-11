@@ -21,6 +21,10 @@ const RegistrationPage = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
 
   const onSubmit = async (formData) => {
+    await createUser(formData);
+  };
+
+  const createUser = async (formData) => {
     try {
       const response = await axios.post('/users', {
         email: formData.email,

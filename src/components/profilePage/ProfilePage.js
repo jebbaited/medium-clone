@@ -1,14 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
+import axios from '../../api/axios';
 
 export const ProfilePage = () => {
   const user = useSelector((state) => state.user.user);
 
+  //   const [userTest, setUserTest] = useState(null);
+
+  //   const params = useParams();
+
+  //   const getUsers = async () => {
+  //     const id = params.name;
+  //     console.log(id);
+  //     try {
+  //       const response = await axios.get(`/users/`);
+  //       console.log('users', response);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
   //   useEffect(() => {
-  //     console.log(user);
-  //   });
+  //     getUsers();
+  //   }, []);
 
   return (
     <>
