@@ -3,11 +3,12 @@ import axios from '../../api/axios';
 import { Post } from '../post/Post';
 
 export const HomePage = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState(null);
+
   const getAllPosts = async () => {
     try {
       const response = await axios.get('/posts');
-      console.log(response);
+      console.log('got posts', response.data.data);
       setPosts([...response.data.data]);
     } catch (error) {}
   };
@@ -15,20 +16,17 @@ export const HomePage = () => {
   useEffect(() => {
     getAllPosts();
   }, []);
+
   return (
     <div className="flex justify-center">
-      <div className="flex justify-start mt-8 w-2/3">
+      <div className="flex flex-col items-center w-2/3 mt-8">
         <div className="w-2/3">
-          <p>Feed</p>
-          {posts.map((post) => (
-            <div key={post._id}>
-              <Post post={post} />
-            </div>
-          ))}
-        </div>
-        <div className="w-1/3 bg-gray-200">
-          Popular Tags
-          <p></p>
+          <p>Global Feed</p>
+          {posts ? (
+            posts.map((post) => <Post post={post} key={post._id} />)
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
       </div>
     </div>
