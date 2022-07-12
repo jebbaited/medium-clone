@@ -15,8 +15,8 @@ export const Header = () => {
         </div>
         {user ? (
           <div className="flex">
-            <Link to="/">
-              <p className="headerText">New Article</p>
+            <Link to="/createPost">
+              <p className="headerText">New Post</p>
             </Link>
             <Link to="/settings">
               <p className="headerText">Settings</p>
