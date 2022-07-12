@@ -31,4 +31,39 @@ export default {
       message: 'Must be shorter',
     },
   },
+  postValidationRules: {
+    titleValidation: {
+      required: 'Title field is required',
+      minLength: {
+        value: 5,
+        message: 'Minimum length is 5 characters',
+      },
+      maxLength: {
+        value: 40,
+        message: 'Title must be shorter',
+      },
+    },
+    descriptionValidation: {
+      required: 'Description field is required',
+      minLength: {
+        value: 5,
+        message: 'Minimum length is 5 characters',
+      },
+      maxLength: {
+        value: 40,
+        message: 'Description must be shorter',
+      },
+    },
+    fullTextValidation: {
+      required: 'Post text field is required',
+      minLength: {
+        value: 1,
+        message: 'Minimum length is 1 characters',
+      },
+      maxLength: {
+        value: 500,
+        message: 'Post text must be shorter',
+      },
+    },
+  },
 };
