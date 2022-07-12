@@ -3,8 +3,10 @@ import { useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import axios from '../../api/axios';
+import { Post } from '../post/Post';
 
 export const ProfilePage = () => {
+  const [userPosts, setUserPosts] = useState([]);
   const user = useSelector((state) => state.user.user);
 
   //   const [userTest, setUserTest] = useState(null);
@@ -25,6 +27,22 @@ export const ProfilePage = () => {
   //   useEffect(() => {
   //     getUsers();
   //   }, []);
+
+  const getPostsOfUser = async () => {
+    try {
+      const response = await axios.get('/posts', {
+        params: {
+          postedBy: user._id,
+        },
+      });
+      console.log(response.data.data);
+      setUserPosts([...response.data.data]);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getPostsOfUser();
+  }, [user]);
 
   return (
     <>
@@ -47,8 +65,15 @@ export const ProfilePage = () => {
               </Link>
             </div>
           </div>
-          <div className="flex justify-center w-2/3 mt-8">
-            <p className="mr-10">My Posts</p>
+          <div className="flex justify-center">
+            <div className="flex flex-col justify-center w-1/2 mt-8">
+              <p className="mr-10 self-start ml-10">My Posts</p>
+              <div className="w-full self-center">
+                {userPosts.map((post) => (
+                  <Post post={post} key={post._id} />
+                ))}
+              </div>
+            </div>
           </div>
         </>
       ) : (
