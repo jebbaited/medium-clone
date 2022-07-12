@@ -1,4 +1,8 @@
 export const Button = (props) => {
+  if (props.className) {
+    cls = `${cls} ${props.className}`;
+  }
+
   let cls =
     'bg-emerald-500 py-3 px-6 text-white rounded-md font-bold self-end hover:bg-emerald-600 disabled:cursor-not-allowed';
   if (props.isDanger) {
