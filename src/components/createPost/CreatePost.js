@@ -1,10 +1,13 @@
 import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
 import { Input } from '../../UI/Input';
-import axios from '../../api/axios';
 
 export const CreatePost = () => {
+  const [errorFromServer, setErrorFromServer] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -22,7 +25,9 @@ export const CreatePost = () => {
         description: data.description,
         fullText: data.fullText,
       });
-    } catch (error) {}
+    } catch (error) {
+      setErrorFromServer(error.response.data.error);
+    }
   };
 
   const buttonDisabled = Object.keys(errors).length ? true : false;
@@ -32,6 +37,9 @@ export const CreatePost = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
         <div className="flex flex-col">
           <h1>Create a new post!</h1>
+          {errorFromServer && (
+            <div className="errorFromServer">{errorFromServer}</div>
+          )}
           <Input
             id="titleInput"
             type="text"
