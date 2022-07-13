@@ -36,7 +36,8 @@ export const ProfilePage = () => {
         },
       });
       console.log(response.data.data);
-      setUserPosts([...response.data.data]);
+      // для отображения постов данного пользователя от новых к старым
+      setUserPosts([...response.data.data.reverse()]);
     } catch (error) {}
   };
 
