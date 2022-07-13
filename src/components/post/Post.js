@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import axios from '../../api/axios';
+import { reSaveOnePost, saveSinglePost } from '../../store/postsSlice';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import { convertDate } from '../../helpers/convertDate';
+import { postImgSrc } from '../../helpers/choosePostImage';
+import { UserBarOnPost } from '../../UI/UserBarOnPost';
+import { Button } from '../../UI/Button';
 
 export const Post = (props) => {
   const [creatorData, setCreatorData] = useState({ name: '', avatar: '' });
@@ -14,8 +18,7 @@ export const Post = (props) => {
   const [dateCreated, setDateCreated] = useState('');
 
   const currentUser = useSelector((state) => state.user.user);
-
-  // const postTitleWithoutSpaces = props.post.title.replace(/\s/g, '-');
+  const dispatch = useDispatch();
 
   // Используется для того, чтобы получить необходимые данные создателя поста для дальнейшего рендера
   const getCreatorNameById = async (id) => {
@@ -45,6 +48,7 @@ export const Post = (props) => {
         isPostLikedByCurrentUser: !postLikesInfo.isPostLikedByCurrentUser,
         amountOfPostLikes: response.data.likes.length,
       });
+      dispatch(reSaveOnePost(response.data));
     } catch (error) {}
   };
 
@@ -57,6 +61,11 @@ export const Post = (props) => {
     return false;
   };
 
+  // если компонент вызван для рендера открытого поста, то сохранаяю этот пост в сторе, чтобы вывести дефолтные значения инпутов
+  const isSinglePostRender = () => {
+    if (props.isSinglePostPage) dispatch(saveSinglePost(props.post));
+  };
+
   useEffect(() => {
     if (props.post.postedBy) getCreatorNameById(props.post.postedBy);
     setDateCreated(convertDate(props.post.dateCreated));
@@ -64,83 +73,74 @@ export const Post = (props) => {
       isPostLikedByCurrentUser: findCurrentUserLikesForPosts(props.post.likes),
       amountOfPostLikes: props.post.likes.length,
     });
+    isSinglePostRender();
   }, []);
 
   return (
-    <div className="m-10">
-      <div>
-        <div className="flex justify-between">
-          <div className="self-start">
-            <div className="flex">
-              <Link to={`/profile/${creatorData.name}`}>
-                <div>
-                  <img
-                    className="mediumAvatar"
-                    src={
-                      creatorData.avatar
-                        ? creatorData.avatar
-                        : imgSrc('No such user')
-                    }
-                  />
+    <>
+      {props.isSinglePostPage ? (
+        <div className="flex flex-col items-center">
+          <div className="w-1/2">
+            <UserBarOnPost
+              creatorData={creatorData}
+              dateCreated={dateCreated}
+              postLikesInfo={postLikesInfo}
+              putLikeForPost={putLikeForPost}
+            />
+          </div>
+          {props.IsCreatorCurrentUser ? (
+            <div className="flex w-1/2 mt-2">
+              <Link to={`/post/editor/${props.post._id}`}>
+                <Button className="mr-4 px-4 py-2 text-sm">Edit Post</Button>
+              </Link>
+
+              <Button
+                isDanger={true}
+                className="mb-0 px-4 py-2 w-28 text-sm"
+                onClick={props.deletePostById}
+              >
+                Delete Post
+              </Button>
+            </div>
+          ) : null}
+
+          <img
+            src={postImgSrc(props.post.image)}
+            className="mt-4 mediumPostImage"
+          />
+          <div className="w-1/2">
+            <div className="flex flex-col items-start text-left">
+              <h2>{props.post.title}</h2>
+              <p className="text-lg">{props.post.description}</p>
+              <p className="mt-6">{props.post.fullText}</p>
+            </div>
+            <hr className="mt-3 border-gray-400" />
+          </div>
+        </div>
+      ) : (
+        <div className="m-10">
+          <div>
+            <UserBarOnPost
+              creatorData={creatorData}
+              dateCreated={dateCreated}
+              postLikesInfo={postLikesInfo}
+              putLikeForPost={putLikeForPost}
+            />
+            <div className="flex flex-col items-start">
+              <Link to={`/post/${props.post.title}`}>
+                <div className="flex flex-col ">
+                  <div className="self-start">
+                    <h2 className="text-xl">{props.post.title}</h2>
+                  </div>
+                  <div className="self-start">
+                    <p>{props.post.description}</p>
+                  </div>
                 </div>
               </Link>
-              <div className="flex flex-col items-start">
-                <div className="self-start">
-                  <Link to={`/profile/${creatorData.name}`}>
-                    <p className="text-emerald-500">
-                      {creatorData.name ? creatorData.name : 'Deleted user'}
-                    </p>
-                  </Link>
-                </div>
-                <p>{dateCreated}</p>
-              </div>
             </div>
           </div>
-          <div className="self-end">
-            <button
-              className={`${
-                postLikesInfo.isPostLikedByCurrentUser
-                  ? 'likesButton bg-emerald-500 text-white'
-                  : 'likesButton'
-              }`}
-              onClick={putLikeForPost}
-            >
-              <div className="flex justify-center">
-                <div>
-                  <svg
-                    className="h-5 w-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </div>
-                <div>{postLikesInfo.amountOfPostLikes}</div>
-              </div>
-            </button>
-          </div>
         </div>
-        <div className="flex flex-col items-start">
-          {/* <Link to={`/post/${postTitleWithoutSpaces}`}> */}
-          <Link to={`/post/${props.post._id}`}>
-            <div className="flex flex-col ">
-              <div className="self-start">
-                <h2 className="text-xl">{props.post.title}</h2>
-              </div>
-              <div className="self-start">
-                <p>{props.post.description}</p>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
-      {/* <hr className="border border-zinc-300 mt-3" /> */}
-    </div>
+      )}
+    </>
   );
 };
