@@ -1,21 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
 import { Post } from '../post/Post';
 
 export const HomePage = () => {
-  const [posts, setPosts] = useState(null);
-
-  const getAllPosts = async () => {
-    try {
-      const response = await axios.get('/posts');
-      console.log('got posts', response.data.data);
-      setPosts([...response.data.data]);
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    getAllPosts();
-  }, []);
+  const posts = useSelector((state) => state.posts.posts);
 
   return (
     <div className="flex justify-center">
@@ -23,7 +12,7 @@ export const HomePage = () => {
         <div className="w-2/3">
           <p>Global Feed</p>
           {posts ? (
-            posts.map((post) => <Post post={post} key={post._id} />)
+            posts?.map((post) => <Post post={post} key={post._id} />)
           ) : (
             <div>Loading...</div>
           )}
