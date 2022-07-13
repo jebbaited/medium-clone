@@ -28,6 +28,9 @@
     .mediumAvatar {
       @apply rounded-full object-cover h-12 w-12 mr-1
     }
+    .mediumPostImage {
+      @apply object-cover h-1/6 w-1/6
+    }
     .likesButton {
       @apply text-emerald-500 text-sm border border-emerald-500 py-1 px-2 w-16 rounded-md hover:text-white hover:bg-emerald-500
     }
