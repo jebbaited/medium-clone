@@ -27,7 +27,7 @@ export const UserBarOnPost = ({
             <div className="self-start">
               <Link to={`/profile/${creatorData.name}`}>
                 <p className="text-emerald-500">
-                  {creatorData.name ? creatorData.name : 'Deleted user'}
+                  {creatorData.name ? creatorData.name : 'Unknown user'}
                 </p>
               </Link>
             </div>

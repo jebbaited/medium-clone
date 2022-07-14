@@ -1,11 +1,11 @@
-import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useSelector } from 'react-redux';
+import { useForm } from 'react-hook-form';
+import { useNavigate, useParams } from 'react-router';
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
 import { Input } from '../../UI/Input';
-import { useSelector } from 'react-redux';
 
 export const PostEditorPage = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
@@ -17,19 +17,24 @@ export const PostEditorPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      title: currentPost?.title,
-      description: currentPost?.description,
-      text: currentPost?.fullText,
+      // image: new File(['foo'], 'https://tl.rulate.ru/i/book/19/10/18925.jpg'),
+      title: currentPost.title,
+      description: currentPost.description,
+      text: currentPost.fullText,
     },
   });
+
+  const navigate = useNavigate();
 
   const onSubmit = async (formData) => {
     await updatePost(formData);
     if (formData.image.length) await updatePostImage(formData.image);
+    navigate(`/post/${currentPost.title}`);
   };
 
   const updatePost = async (data) => {
@@ -45,6 +50,8 @@ export const PostEditorPage = () => {
   };
 
   const updatePostImage = async (files) => {
+    console.log('image', files);
+
     const file = files[0];
     let formData = new FormData();
     formData.append('image', file);

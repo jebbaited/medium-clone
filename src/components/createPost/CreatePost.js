@@ -1,5 +1,7 @@
-import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
@@ -7,6 +9,8 @@ import { Input } from '../../UI/Input';
 
 export const CreatePost = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
+  const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.user.user);
 
   const {
     register,
@@ -16,6 +20,7 @@ export const CreatePost = () => {
 
   const onSubmit = async (formData) => {
     await createPost(formData);
+    navigate(`/profile/${currentUser.name}`);
   };
 
   const createPost = async (data) => {

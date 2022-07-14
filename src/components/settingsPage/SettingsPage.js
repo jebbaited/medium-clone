@@ -142,7 +142,7 @@ export const SettingsPage = () => {
             <Button onClick={logout} isDanger={true}>
               Logout
             </Button>
-            <Modal deleteUser={deleteUser} />
+            <Modal deleteTarget="profile" deleteUser={deleteUser} />
           </div>
         </div>
       ) : (

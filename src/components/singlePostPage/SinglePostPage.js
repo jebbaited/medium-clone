@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import axios from '../../api/axios';
 import { Post } from '../post/Post';
 
@@ -8,6 +8,7 @@ export const SinglePostPage = () => {
   const [postToRender, setPostToRender] = useState(null);
   const currentUser = useSelector((state) => state.user.user);
   const params = useParams();
+  const navigate = useNavigate();
 
   // получаю title после из URL и по нему ищу пост
   const searchPostByTitle = async () => {
@@ -34,6 +35,7 @@ export const SinglePostPage = () => {
     try {
       axios.delete(`/posts/${postToRender._id}`);
       console.log('Successfully deleted');
+      navigate(`/profile/${currentUser.name}`);
     } catch (error) {}
   };
 

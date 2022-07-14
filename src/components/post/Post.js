@@ -8,6 +8,7 @@ import { convertDate } from '../../helpers/convertDate';
 import { postImgSrc } from '../../helpers/choosePostImage';
 import { UserBarOnPost } from '../../UI/UserBarOnPost';
 import { Button } from '../../UI/Button';
+import Modal from '../../UI/Modal';
 
 export const Post = (props) => {
   const [creatorData, setCreatorData] = useState({ name: '', avatar: '' });
@@ -94,13 +95,11 @@ export const Post = (props) => {
                 <Button className="mr-4 px-4 py-2 text-sm">Edit Post</Button>
               </Link>
 
-              <Button
-                isDanger={true}
+              <Modal
+                deleteTarget="post"
+                deleteUser={props.deletePostById}
                 className="mb-0 px-4 py-2 w-28 text-sm"
-                onClick={props.deletePostById}
-              >
-                Delete Post
-              </Button>
+              />
             </div>
           ) : null}
 
@@ -108,11 +107,11 @@ export const Post = (props) => {
             src={postImgSrc(props.post.image)}
             className="mt-4 mediumPostImage"
           />
-          <div className="w-1/2">
+          <div className="w-1/2 break-words">
             <div className="flex flex-col items-start text-left">
               <h2>{props.post.title}</h2>
               <p className="text-lg">{props.post.description}</p>
-              <p className="mt-6">{props.post.fullText}</p>
+              <p className="mt-6 w-full">{props.post.fullText}</p>
             </div>
             <hr className="mt-3 border-gray-400" />
           </div>
@@ -127,12 +126,15 @@ export const Post = (props) => {
               putLikeForPost={putLikeForPost}
             />
             <div className="flex flex-col items-start">
-              <Link to={`/post/${props.post.title}`}>
-                <div className="flex flex-col ">
-                  <div className="self-start">
+              <Link
+                to={`/post/${props.post.title}`}
+                className="break-words w-full text-left"
+              >
+                <div className="flex flex-col">
+                  <div className="self-start w-full">
                     <h2 className="text-xl">{props.post.title}</h2>
                   </div>
-                  <div className="self-start">
+                  <div className="self-start w-full">
                     <p>{props.post.description}</p>
                   </div>
                 </div>

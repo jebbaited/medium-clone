@@ -5,8 +5,12 @@ export default function Modal(props) {
   const [showModal, setShowModal] = React.useState(false);
   return (
     <>
-      <Button onClick={() => setShowModal(true)} isDanger={true}>
-        Delete User
+      <Button
+        onClick={() => setShowModal(true)}
+        isDanger={true}
+        className={props.className}
+      >
+        Delete {props.deleteTarget}
       </Button>
       {showModal ? (
         <>
@@ -28,7 +32,7 @@ export default function Modal(props) {
                 </div>
                 <div className="relative p-6 flex-auto">
                   <p className="my-4 text-slate-500 text-lg leading-relaxed text-2xl">
-                    Do you really want to delete your profile?
+                    Do you really want to delete your {props.deleteTarget}?
                   </p>
                 </div>
                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">

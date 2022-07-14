@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 import './App.css';
 import axios from './api/axios';
@@ -14,12 +15,14 @@ import { ProfilePage } from './components/profilePage/ProfilePage';
 import { HomePage } from './components/homePage/HomePage';
 import { CreatePost } from './components/createPost/CreatePost';
 import { SinglePostPage } from './components/singlePostPage/SinglePostPage';
-import { savePosts } from './store/postsSlice';
+import { saveLastPageNumber, savePosts } from './store/postsSlice';
 import { PostEditorPage } from './components/postEditorPage/PostEditorPage';
 
 function App() {
   const userData = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // const params = useParams()
 
   const getUser = async () => {
     try {
@@ -31,9 +34,19 @@ function App() {
   const getPosts = async () => {
     try {
       const response = await axios.get('/posts');
-      console.log('got posts', response.data);
+      dispatch(
+        saveLastPageNumber(
+          Math.floor(
+            response.data.pagination.total / response.data.pagination.limit
+          )
+        )
+      );
+      // console.log(response);
       dispatch(savePosts([...response.data.data.reverse()]));
-    } catch (error) {}
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -54,6 +67,7 @@ function App() {
         <Route path="/createPost" element={<CreatePost />} />
         <Route path="/post/:title" element={<SinglePostPage />} />
         <Route path="/post/editor/:id" element={<PostEditorPage />} />
+        <Route path="/page-:pageNumber" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
       </Routes>
     </div>
