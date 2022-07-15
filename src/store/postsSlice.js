@@ -6,20 +6,21 @@ const postsSlice = createSlice({
     posts: null,
     singlePost: null,
     pageNumber: 1,
-    lastPageNumber: null,
+    paginationInfo: {
+      lastPageNumber: null,
+      total: null,
+      limit: null,
+    },
   },
   reducers: {
     savePosts(state, action) {
       state.posts = [...action.payload];
     },
     reSaveOnePost(state, action) {
-      state.posts.map((post, index) => {
+      state.posts.forEach((post, index) => {
         if (post._id === action.payload._id)
           state.posts[index] = action.payload;
       });
-    },
-    saveSinglePost(state, action) {
-      state.singlePost = { ...action.payload };
     },
     saveSinglePost(state, action) {
       state.singlePost = { ...action.payload };
@@ -36,8 +37,12 @@ const postsSlice = createSlice({
     setCurrentPage(state, action) {
       state.pageNumber = action.payload;
     },
-    saveLastPageNumber(state, action) {
-      state.lastPageNumber = action.payload;
+    savePaginationInfo(state, action) {
+      state.paginationInfo = {
+        lastPageNumber: Math.ceil(action.payload.total / action.payload.limit),
+        total: action.payload.total,
+        limit: action.payload.limit,
+      };
     },
   },
 });
@@ -50,7 +55,7 @@ export const {
   decreasePage,
   setDefaultPage,
   setCurrentPage,
-  saveLastPageNumber,
+  savePaginationInfo,
 } = postsSlice.actions;
 
 export default postsSlice.reducer;
