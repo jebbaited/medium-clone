@@ -15,7 +15,6 @@ import { ProfilePage } from './components/profilePage/ProfilePage';
 import { HomePage } from './components/homePage/HomePage';
 import { CreatePost } from './components/createPost/CreatePost';
 import { SinglePostPage } from './components/singlePostPage/SinglePostPage';
-import { saveLastPageNumber, savePosts } from './store/postsSlice';
 import { PostEditorPage } from './components/postEditorPage/PostEditorPage';
 
 function App() {
@@ -34,15 +33,7 @@ function App() {
   const getPosts = async () => {
     try {
       const response = await axios.get('/posts');
-      dispatch(
-        saveLastPageNumber(
-          Math.floor(
-            response.data.pagination.total / response.data.pagination.limit
-          )
-        )
-      );
-      // console.log(response);
-      dispatch(savePosts([...response.data.data.reverse()]));
+      dispatch(savePaginationInfo(response.data.pagination));
       navigate('/');
     } catch (error) {
       console.log(error);
@@ -63,9 +54,9 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/settings" element={<SettingsPage />} />
-        <Route path="/profile/:name" element={<ProfilePage />} />
+        <Route path="/profile/:userId/:name" element={<ProfilePage />} />
         <Route path="/createPost" element={<CreatePost />} />
-        <Route path="/post/:title" element={<SinglePostPage />} />
+        <Route path="/post/:postId/:title" element={<SinglePostPage />} />
         <Route path="/post/editor/:id" element={<PostEditorPage />} />
         <Route path="/page-:pageNumber" element={<HomePage />} />
         <Route path="/" element={<HomePage />} />
