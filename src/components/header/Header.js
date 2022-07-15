@@ -12,7 +12,7 @@ export const Header = () => {
     <nav className="flex items-center justify-end flex-wrap bg-white-500 py-2 px-4 h-14 max-w-screen-2xl">
       <div className="flex items-center w-auto text-base">
         <div>
-          <Link to={path}>
+          <Link to="/">
             <p className="headerText">Home</p>
           </Link>
         </div>
@@ -24,7 +24,10 @@ export const Header = () => {
             <Link to="/settings">
               <p className="headerText">Settings</p>
             </Link>
-            <Link to={'/profile/' + currentUser.name} className="flex">
+            <Link
+              to={`/profile/${currentUser._id}/${currentUser.name}`}
+              className="flex"
+            >
               <img src={imgSrc(currentUser)} className="smallAvatar" />
               <p className="headerText">{currentUser.name}</p>
             </Link>

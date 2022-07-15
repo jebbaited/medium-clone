@@ -20,7 +20,7 @@ export const CreatePost = () => {
 
   const onSubmit = async (formData) => {
     await createPost(formData);
-    navigate(`/profile/${currentUser.name}`);
+    navigate(`/profile/${currentUser._id}/${currentUser.name}`);
   };
 
   const createPost = async (data) => {
