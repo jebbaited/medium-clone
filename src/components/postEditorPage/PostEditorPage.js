@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
 import { Input } from '../../UI/Input';
+import { saveSinglePost } from '../../store/postsSlice';
 
 export const PostEditorPage = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
@@ -34,24 +35,22 @@ export const PostEditorPage = () => {
   const onSubmit = async (formData) => {
     await updatePost(formData);
     if (formData.image.length) await updatePostImage(formData.image);
-    navigate(`/post/${currentPost.title}`);
   };
 
   const updatePost = async (data) => {
     try {
       await axios.patch(`/posts/${postId}`, {
         title: data.title,
+        fullText: data.text,
         description: data.description,
-        fullText: data.fullText,
       });
     } catch (error) {
       setErrorFromServer(error.response.data.error);
     }
+    navigate(`/post/${data.title}`);
   };
 
   const updatePostImage = async (files) => {
-    console.log('image', files);
-
     const file = files[0];
     let formData = new FormData();
     formData.append('image', file);
