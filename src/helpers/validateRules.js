@@ -57,8 +57,8 @@ export default {
     fullTextValidation: {
       required: 'Post text field is required',
       minLength: {
-        value: 1,
-        message: 'Minimum length is 1 characters',
+        value: 20,
+        message: 'Minimum length is 20 characters',
       },
       maxLength: {
         value: 500,
