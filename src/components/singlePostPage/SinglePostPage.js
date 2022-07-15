@@ -10,23 +10,9 @@ export const SinglePostPage = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  // получаю title после из URL и по нему ищу пост
-  const searchPostByTitle = async () => {
-    const title = params.title;
+  const getNecessaryPost = async () => {
     try {
-      const response = await axios.get('/posts', {
-        params: {
-          search: title,
-        },
-      });
-      await getNecessaryPost(response.data.data[0]._id);
-    } catch (error) {}
-  };
-
-  // получив нужный пост беру его id и делаю следующий запрос, который даёт всю инфу про пост
-  const getNecessaryPost = async (postId) => {
-    try {
-      const response = await axios.get(`/posts/${postId}`);
+      const response = await axios.get(`/posts/${params.postId}`);
       setPostToRender(response.data);
     } catch (error) {}
   };
@@ -35,7 +21,7 @@ export const SinglePostPage = () => {
     try {
       axios.delete(`/posts/${postToRender._id}`);
       console.log('Successfully deleted');
-      navigate(`/profile/${currentUser.name}`);
+      navigate(`/profile/${currentUser._id}/${currentUser.name}`);
     } catch (error) {}
   };
 
@@ -46,7 +32,7 @@ export const SinglePostPage = () => {
   };
 
   useEffect(() => {
-    searchPostByTitle();
+    getNecessaryPost();
   }, []);
 
   return (
