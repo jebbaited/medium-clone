@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { imgSrc } from '../helpers/chooseAvatarImage';
 
@@ -7,11 +8,16 @@ export const UserBarOnPost = ({
   postLikesInfo,
   putLikeForPost,
 }) => {
+  const currentPage = useSelector((state) => state.posts.pageNumber);
+  const pathToProfile = creatorData.id
+    ? `/profile/${creatorData.id}/${creatorData.name}`
+    : `/page-${currentPage}`;
+
   return (
     <div className="flex justify-between">
       <div className="self-start">
         <div className="flex">
-          <Link to={`/profile/${creatorData.name}`}>
+          <Link to={pathToProfile}>
             <div>
               <img
                 className="mediumAvatar"
@@ -25,7 +31,7 @@ export const UserBarOnPost = ({
           </Link>
           <div className="flex flex-col items-start">
             <div className="self-start">
-              <Link to={`/profile/${creatorData.name}`}>
+              <Link to={pathToProfile}>
                 <p className="text-emerald-500">
                   {creatorData.name ? creatorData.name : 'Unknown user'}
                 </p>
