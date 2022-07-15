@@ -3,18 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import axios from '../../api/axios';
+import { countPostsSkip } from '../../helpers/countPostsToSkip';
 import {
   decreasePage,
   increasePage,
   savePosts,
   setDefaultPage,
   setCurrentPage,
+  savePaginationInfo,
 } from '../../store/postsSlice';
 import { Button } from '../../UI/Button';
 
 export const Pagination = () => {
   const page = useSelector((state) => state.posts.pageNumber);
-  const lastPageNumber = useSelector((state) => state.posts.lastPageNumber);
+  const lastPageNumber = useSelector(
+    (state) => state.posts.paginationInfo.lastPageNumber
+  );
+  const total = useSelector((state) => state.posts.paginationInfo.total);
+  const limit = useSelector((state) => state.posts.paginationInfo.limit);
 
   const params = useParams();
   const dispatch = useDispatch();
@@ -49,24 +55,45 @@ export const Pagination = () => {
   };
 
   const getPostsByParams = async (pageToSkip) => {
-    const postsPerPage = 10;
+    const currentPage = lastPageNumber - pageToSkip;
+    const skip = countPostsSkip(currentPage, lastPageNumber, total, limit);
+    const limitForLastPosts =
+      skip === 0 ? limit - (lastPageNumber * limit - total) : 0;
+
+    console.log(limitForLastPosts);
+
     try {
       const response = await axios.get('/posts', {
         params: {
-          skip: pageToSkip * postsPerPage,
+          limit: limitForLastPosts || 10,
+          skip: skip,
         },
       });
       dispatch(savePosts([...response.data.data.reverse()]));
+      // dispatch(savePaginationInfo(response.data.pagination));
+      dispatch(
+        savePaginationInfo({
+          lastPageNumber: lastPageNumber,
+          total: response.data.pagination.total,
+          limit: 10,
+        })
+      );
     } catch (error) {}
   };
 
   disableNextButton = page >= lastPageNumber ? true : false;
   disableBackButton = page <= 1 ? true : false;
 
+  useEffect(() => {
+    goToTheFirstPage();
+  }, [total]);
+
   return (
     <div className="flex items-center">
       <Link to="/">
-        <Button onClick={goToTheFirstPage}>First page</Button>
+        <Button onClick={goToTheFirstPage} disable={disableBackButton}>
+          First page
+        </Button>
       </Link>
       <Link to={params.pageNumber === '2' ? '/' : `/page-${page - 1}`}>
         <Button
@@ -88,7 +115,9 @@ export const Pagination = () => {
         </Button>
       </Link>
       <Link to={`/page-${lastPageNumber}`}>
-        <Button onClick={goToTheLastPage}>Last page</Button>
+        <Button onClick={goToTheLastPage} disable={disableNextButton}>
+          Last page
+        </Button>
       </Link>
     </div>
   );
