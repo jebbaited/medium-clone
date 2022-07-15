@@ -11,7 +11,11 @@ import { Button } from '../../UI/Button';
 import Modal from '../../UI/Modal';
 
 export const Post = (props) => {
-  const [creatorData, setCreatorData] = useState({ name: '', avatar: '' });
+  const [creatorData, setCreatorData] = useState({
+    name: '',
+    avatar: '',
+    id: '',
+  });
   const [postLikesInfo, setPostLikesInfo] = useState({
     isPostLikedByCurrentUser: false,
     amountOfPostLikes: 0,
@@ -28,6 +32,7 @@ export const Post = (props) => {
       setCreatorData({
         name: response.data.name,
         avatar: imgSrc(response.data),
+        id: response.data._id,
       });
     } catch (error) {
       console.log(error);
@@ -127,7 +132,7 @@ export const Post = (props) => {
             />
             <div className="flex flex-col items-start">
               <Link
-                to={`/post/${props.post.title}`}
+                to={`/post/${props.post._id}/${props.post.title}`}
                 className="break-words w-full text-left"
               >
                 <div className="flex flex-col">
