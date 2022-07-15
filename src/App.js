@@ -16,6 +16,7 @@ import { HomePage } from './components/homePage/HomePage';
 import { CreatePost } from './components/createPost/CreatePost';
 import { SinglePostPage } from './components/singlePostPage/SinglePostPage';
 import { PostEditorPage } from './components/postEditorPage/PostEditorPage';
+import { savePaginationInfo } from './store/postsSlice';
 
 function App() {
   const userData = useSelector((state) => state.user.user);
