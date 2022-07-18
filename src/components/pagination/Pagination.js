@@ -60,8 +60,6 @@ export const Pagination = () => {
     const limitForLastPosts =
       skip === 0 ? limit - (lastPageNumber * limit - total) : 0;
 
-    console.log(limitForLastPosts);
-
     try {
       const response = await axios.get('/posts', {
         params: {
@@ -84,9 +82,22 @@ export const Pagination = () => {
   disableNextButton = page >= lastPageNumber ? true : false;
   disableBackButton = page <= 1 ? true : false;
 
+  // переделать как-то по-другому
   useEffect(() => {
-    goToTheFirstPage();
-  }, [total]);
+    // отрисовка для первого рендера
+    if (page === 1 && params.pageNumber === undefined && total !== null) {
+      goToTheFirstPage();
+    }
+    // при нажатии на Home в хедере pageNumber становится undefined
+    if (page !== 1 && params.pageNumber === undefined) {
+      goToTheFirstPage();
+    }
+    // при нажатии на кнопку "вперед" в браузере
+    if (params.pageNumber > page) goToTheNextPage();
+
+    // при нажатии на кнопку "назад" в браузере
+    if (params.pageNumber < page) goToThePreviousPage();
+  }, [params.pageNumber, total]);
 
   return (
     <div className="flex items-center">
