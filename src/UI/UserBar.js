@@ -2,12 +2,7 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { imgSrc } from '../helpers/chooseAvatarImage';
 
-export const UserBarOnPost = ({
-  creatorData,
-  dateCreated,
-  postLikesInfo,
-  putLikeForPost,
-}) => {
+export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
   const currentPage = useSelector((state) => state.posts.pageNumber);
   const pathToProfile = creatorData.id
     ? `/profile/${creatorData.id}/${creatorData.name}`
@@ -32,7 +27,7 @@ export const UserBarOnPost = ({
           <div className="flex flex-col items-start">
             <div className="self-start">
               <Link to={pathToProfile}>
-                <p className="text-emerald-500">
+                <p className="text-emerald-500 text-left">
                   {creatorData.name ? creatorData.name : 'Unknown user'}
                 </p>
               </Link>
@@ -44,11 +39,11 @@ export const UserBarOnPost = ({
       <div className="self-end">
         <button
           className={`${
-            postLikesInfo.isPostLikedByCurrentUser
+            likesInfo.isPostLikedByCurrentUser
               ? 'likesButton bg-emerald-500 text-white'
               : 'likesButton'
           }`}
-          onClick={putLikeForPost}
+          onClick={putLike}
         >
           <div className="flex justify-center">
             <div>
@@ -66,7 +61,7 @@ export const UserBarOnPost = ({
                 />
               </svg>
             </div>
-            <div>{postLikesInfo.amountOfPostLikes}</div>
+            <div>{likesInfo.amountOfPostLikes}</div>
           </div>
         </button>
       </div>
