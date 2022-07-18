@@ -6,7 +6,7 @@ import { reSaveOnePost, saveSinglePost } from '../../store/postsSlice';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import { convertDate } from '../../helpers/convertDate';
 import { postImgSrc } from '../../helpers/choosePostImage';
-import { UserBarOnPost } from '../../UI/UserBarOnPost';
+import { UserBar } from '../../UI/UserBar';
 import { Button } from '../../UI/Button';
 import Modal from '../../UI/Modal';
 
@@ -87,11 +87,11 @@ export const Post = (props) => {
       {props.isSinglePostPage ? (
         <div className="flex flex-col items-center">
           <div className="w-1/2">
-            <UserBarOnPost
+            <UserBar
               creatorData={creatorData}
               dateCreated={dateCreated}
-              postLikesInfo={postLikesInfo}
-              putLikeForPost={putLikeForPost}
+              likesInfo={postLikesInfo}
+              putLike={putLikeForPost}
             />
           </div>
           {props.IsCreatorCurrentUser ? (
@@ -124,11 +124,11 @@ export const Post = (props) => {
       ) : (
         <div className="m-10">
           <div>
-            <UserBarOnPost
+            <UserBar
               creatorData={creatorData}
               dateCreated={dateCreated}
-              postLikesInfo={postLikesInfo}
-              putLikeForPost={putLikeForPost}
+              likesInfo={postLikesInfo}
+              putLike={putLikeForPost}
             />
             <div className="flex flex-col items-start">
               <Link
