@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 import axios from '../../api/axios';
+import { CommentsSection } from '../commentsSection/CommentsSection';
 import { Post } from '../post/Post';
 
 export const SinglePostPage = () => {
@@ -38,12 +39,16 @@ export const SinglePostPage = () => {
   return (
     <>
       {postToRender ? (
-        <Post
-          post={postToRender}
-          isSinglePostPage={true}
-          deletePostById={deletePostById}
-          IsCreatorCurrentUser={checkCreatorOfPost()}
-        />
+        <>
+          <Post
+            post={postToRender}
+            isSinglePostPage={true}
+            deletePostById={deletePostById}
+            IsCreatorCurrentUser={checkCreatorOfPost()}
+          />
+
+          <CommentsSection />
+        </>
       ) : (
         <div>Loading...</div>
       )}
