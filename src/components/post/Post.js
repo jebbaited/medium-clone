@@ -17,8 +17,8 @@ export const Post = (props) => {
     id: '',
   });
   const [postLikesInfo, setPostLikesInfo] = useState({
-    isPostLikedByCurrentUser: false,
-    amountOfPostLikes: 0,
+    isLikedByCurrentUser: false,
+    amountOfLikes: 0,
   });
   const [dateCreated, setDateCreated] = useState('');
 
@@ -51,8 +51,8 @@ export const Post = (props) => {
     try {
       const response = await axios.get(`/posts/${props.post._id}`);
       setPostLikesInfo({
-        isPostLikedByCurrentUser: !postLikesInfo.isPostLikedByCurrentUser,
-        amountOfPostLikes: response.data.likes.length,
+        isLikedByCurrentUser: !postLikesInfo.isLikedByCurrentUser,
+        amountOfLikes: response.data.likes.length,
       });
       dispatch(reSaveOnePost(response.data));
     } catch (error) {}
@@ -76,8 +76,8 @@ export const Post = (props) => {
     if (props.post.postedBy) getCreatorNameById(props.post.postedBy);
     setDateCreated(convertDate(props.post.dateCreated));
     setPostLikesInfo({
-      isPostLikedByCurrentUser: findCurrentUserLikesForPosts(props.post.likes),
-      amountOfPostLikes: props.post.likes.length,
+      isLikedByCurrentUser: findCurrentUserLikesForPosts(props.post.likes),
+      amountOfLikes: props.post.likes.length,
     });
     isSinglePostRender();
   }, []);
@@ -118,7 +118,7 @@ export const Post = (props) => {
               <p className="text-lg">{props.post.description}</p>
               <p className="mt-6 w-full">{props.post.fullText}</p>
             </div>
-            <hr className="mt-3 border-gray-400" />
+            {/* <hr className="mt-3 border-gray-400" /> */}
           </div>
         </div>
       ) : (
