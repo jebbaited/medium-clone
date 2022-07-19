@@ -1,7 +1,7 @@
 export const Textarea = (props) => {
   return (
     <div className="flex justify-center">
-      <div className="mb-3 xl:w-96">
+      <div className="mb-3 w-full">
         {/* <label
           htmlFor="exampleFormControlTextarea1"
           className="form-label inline-block mb-2 text-gray-700"
@@ -15,6 +15,7 @@ export const Textarea = (props) => {
         w-full
         px-3
         py-1.5
+        resize-none
         text-base
         font-normal
         text-gray-700
