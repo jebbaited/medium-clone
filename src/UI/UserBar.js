@@ -39,7 +39,7 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
       <div className="self-end">
         <button
           className={`${
-            likesInfo.isPostLikedByCurrentUser
+            likesInfo.isLikedByCurrentUser
               ? 'likesButton bg-emerald-500 text-white'
               : 'likesButton'
           }`}
@@ -61,7 +61,7 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
                 />
               </svg>
             </div>
-            <div>{likesInfo.amountOfPostLikes}</div>
+            <div>{likesInfo.amountOfLikes}</div>
           </div>
         </button>
       </div>
