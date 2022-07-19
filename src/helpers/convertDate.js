@@ -8,7 +8,7 @@ export const convertDate = (date) => {
 
 export const timeFromNow = (date) => {
   dayjs.extend(relativeTime);
-  const currentDate = dayjs(date).format('YYYY-MM-DD');
+  const currentDate = dayjs(date).format();
   const timeToDisplay = dayjs(currentDate).toNow(true);
   return timeToDisplay;
 };
