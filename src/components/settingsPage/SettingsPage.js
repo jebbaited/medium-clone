@@ -8,6 +8,7 @@ import validateRules from '../../helpers/validateRules';
 import { removeItem } from '../../helpers/persistanceStorage';
 import axios from '../../api/axios';
 import { clearUser, saveUser } from '../../store/userSlice';
+import { Textarea } from '../../UI/Textarea';
 
 export const SettingsPage = () => {
   const user = useSelector((state) => state.user.user);
@@ -30,6 +31,7 @@ export const SettingsPage = () => {
   const onSubmit = async (formData) => {
     await updateUserInfo(formData);
     if (formData.avatar.length) await setAvatar(formData.avatar);
+    navigate(`/profile/${user._id}/${user.name}`);
   };
 
   const updateUserInfo = async (data) => {
@@ -122,9 +124,9 @@ export const SettingsPage = () => {
                 isLabled={true}
               />
 
-              <Input
+              <Textarea
                 id="detailsSettingsInputForm"
-                type="text"
+                rows="2"
                 name="details"
                 placeholder="Some details about you"
                 register={{

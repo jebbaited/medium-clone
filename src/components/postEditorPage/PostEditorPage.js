@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
 import { Input } from '../../UI/Input';
-import { saveSinglePost } from '../../store/postsSlice';
+import { Textarea } from '../../UI/Textarea';
 
 export const PostEditorPage = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
   const params = useParams();
 
   const currentPost = useSelector((state) => state.posts.singlePost);
+  const currentUser = useSelector((state) => state.user.user);
 
   const postId = params.id;
   const {
@@ -23,7 +24,7 @@ export const PostEditorPage = () => {
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      // image: new File(['foo'], 'https://tl.rulate.ru/i/book/19/10/18925.jpg'),
+      // image: new File(),
       title: currentPost.title,
       description: currentPost.description,
       text: currentPost.fullText,
@@ -47,7 +48,7 @@ export const PostEditorPage = () => {
     } catch (error) {
       setErrorFromServer(error.response.data.error);
     }
-    navigate(`/post/${data.title}`);
+    navigate(`/profile/${currentUser._id}/${currentUser.name}`);
   };
 
   const updatePostImage = async (files) => {
@@ -118,9 +119,10 @@ export const PostEditorPage = () => {
             errorMessage={errors}
             isLabled={true}
           />
-          <Input
+
+          <Textarea
             id="fullTextInput"
-            type="text"
+            rows="7"
             name="text"
             placeholder="Write your post"
             register={{

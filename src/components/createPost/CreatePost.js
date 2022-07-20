@@ -6,6 +6,7 @@ import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
 import { Input } from '../../UI/Input';
+import { Textarea } from '../../UI/Textarea';
 
 export const CreatePost = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
@@ -70,9 +71,10 @@ export const CreatePost = () => {
             }}
             errorMessage={errors}
           />
-          <Input
+
+          <Textarea
             id="fullTextInput"
-            type="text"
+            rows="7"
             name="fullText"
             placeholder="Write your post"
             register={{
