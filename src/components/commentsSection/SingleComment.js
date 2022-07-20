@@ -6,8 +6,15 @@ import { timeFromNow } from '../../helpers/convertDate';
 import { Button } from '../../UI/Button';
 import { Textarea } from '../../UI/Textarea';
 import { UserBar } from '../../UI/UserBar';
+import { CommentsSection } from './CommentsSection';
 
-export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
+export const SingleComment = ({
+  commentData,
+  deleteComment,
+  saveChanges,
+  replyToComment,
+  isReplied,
+}) => {
   const [creatorOfCommentData, setCreatorOfCommentData] = useState({
     name: '',
     avatar: '',
@@ -19,7 +26,8 @@ export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
   });
   const [dateCommentCreated, setDateCommentCreated] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [editCommentText, setEditCommentText] = useState('');
+  const [editedCommentText, setEditedCommentText] = useState('');
+  const [isReplying, setIsReplying] = useState(false);
 
   const currentUser = useSelector((state) => state.user.user);
 
@@ -61,12 +69,17 @@ export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
   };
 
   const saveAndCancel = () => {
-    saveChanges(commentData._id, editCommentText);
+    saveChanges(commentData._id, editedCommentText);
     setIsEditing(false);
   };
 
+  const replyClicked = () => {
+    setIsReplying(!isReplying);
+    replyToComment();
+  };
+
   const handleEditingComment = (event) => {
-    setEditCommentText(event.target.value);
+    setEditedCommentText(event.target.value);
   };
 
   useEffect(() => {
@@ -76,7 +89,7 @@ export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
       isLikedByCurrentUser: findCurrentUserLikesForComment(commentData.likes),
       amountOfLikes: commentData.likes.length,
     });
-    setEditCommentText(commentData.text);
+    setEditedCommentText(commentData.text);
   }, []);
 
   return (
@@ -89,37 +102,19 @@ export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
             likesInfo={commentLikesInfo}
             putLike={setLikeForComment}
           />
-          {currentUser._id === commentData.commentedBy && !isEditing ? (
-            <>
-              <p className="break-words text-left text-black">
-                {commentData.text}
-              </p>
 
-              <div className="flex justify-end">
-                <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
-                  onClick={editComment}
-                >
-                  Edit
-                </Button>
-
-                <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white"
-                  onClick={() => deleteComment(commentData._id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </>
-          ) : null}
           {isEditing ? (
             <>
               <Textarea
-                value={editCommentText}
+                id="editCommentField"
+                rows="2"
+                name="editComment"
+                placeholder="Leave a comment..."
+                value={editedCommentText}
                 onChange={handleEditingComment}
               />
 
-              <div className="flex justify-end">
+              <div className="flex justify-end mb-1">
                 <Button
                   className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
                   onClick={cancelEditing}
@@ -133,6 +128,59 @@ export const SingleComment = ({ commentData, deleteComment, saveChanges }) => {
                 >
                   Save
                 </Button>
+              </div>
+            </>
+          ) : (
+            <p className="break-words text-left text-black mb-1">
+              {commentData.text}
+            </p>
+          )}
+          {currentUser._id === commentData.commentedBy && !isEditing ? (
+            <>
+              <div className="flex justify-between">
+                <Button
+                  className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                  onClick={replyClicked}
+                  disabled={isReplied}
+                >
+                  Reply
+                </Button>
+
+                <div className="flex">
+                  <Button
+                    className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                    onClick={editComment}
+                  >
+                    Edit
+                  </Button>
+
+                  <Button
+                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white"
+                    onClick={() => deleteComment(commentData._id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-start">
+              <Button
+                className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                onClick={replyClicked}
+                disabled={isReplied}
+              >
+                Reply
+              </Button>
+            </div>
+          )}
+          {isReplying ? (
+            <>
+              <div className="w-full">
+                <CommentsSection
+                  commentIdToReply={commentData._id}
+                  isReplied={true}
+                />
               </div>
             </>
           ) : null}

@@ -7,26 +7,33 @@ import { Button } from '../../UI/Button';
 import { Textarea } from '../../UI/Textarea';
 import { SingleComment } from './SingleComment';
 
-export const CommentsSection = () => {
+export const CommentsSection = ({ commentIdToReply, isReplied }) => {
   const [comments, setComments] = useState(null);
   const [newCommentText, setNewCommentText] = useState('');
-  // const [editCommentText, setEditCommentText] = useState('');
   const params = useParams();
+
   const currentUser = useSelector((state) => state.user.user);
 
   const getAllComments = async () => {
     try {
       const response = await axios.get(`/comments/post/${params.postId}`);
-      setComments(response.data.reverse());
-      console.log(response.data);
+      handleComments(response.data);
     } catch (error) {}
+  };
+
+  const handleComments = (data) => {
+    const commentsToSet = commentIdToReply
+      ? data.filter((comment) => comment.followedCommentID === commentIdToReply)
+      : data.filter((comment) => comment.followedCommentID === null);
+
+    setComments(commentsToSet.reverse());
   };
 
   const createComment = async () => {
     try {
       await axios.post(`/comments/post/${params.postId}`, {
         text: newCommentText,
-        followedCommentID: null,
+        followedCommentID: commentIdToReply ? commentIdToReply : null,
       });
       await getAllComments();
       setNewCommentText('');
@@ -49,6 +56,10 @@ export const CommentsSection = () => {
     } catch (error) {}
   };
 
+  const replyToComment = () => {
+    getAllComments();
+  };
+
   const cancel = () => {
     setNewCommentText('');
   };
@@ -57,10 +68,6 @@ export const CommentsSection = () => {
     setNewCommentText(event.target.value);
   };
 
-  // const handleEditingComment = (event) => {
-  //   setEditCommentText(event.target.value)
-  // }
-
   useEffect(() => {
     getAllComments();
   }, []);
@@ -68,22 +75,36 @@ export const CommentsSection = () => {
   return (
     <>
       <div className="flex justify-center">
-        <div className="w-1/2">
+        <div className={isReplied ? 'w-full' : 'w-1/2'}>
           <div className="flex flex justify-start w-full mt-5">
             <img src={imgSrc(currentUser)} className="smallAvatar" />
             <div className="w-full">
-              <Textarea onChange={handleNewComment} value={newCommentText} />
+              <Textarea
+                id="commentField"
+                rows="3"
+                name="comment"
+                placeholder="Leave a comment..."
+                onChange={handleNewComment}
+                value={newCommentText}
+              />
               <div className="flex justify-end">
                 <div className="mr-1">
                   <Button
                     onClick={cancel}
-                    className="bg-white text-gray-400 hover:bg-white"
+                    className={`bg-white text-gray-400 hover:bg-white ${
+                      isReplied ? 'px-1 py-1 text-sm' : ''
+                    }`}
                   >
                     Cancel
                   </Button>
                 </div>
                 <div>
-                  <Button onClick={createComment}>Post</Button>
+                  <Button
+                    onClick={createComment}
+                    className={isReplied ? 'px-1 py-1 text-sm' : ''}
+                  >
+                    Post
+                  </Button>
                 </div>
               </div>
             </div>
@@ -92,18 +113,30 @@ export const CommentsSection = () => {
       </div>
 
       <div className="flex flex-col items-center">
-        <div className="w-1/2">
-          <div className="w-1/2 flex flex-col items-left">
+        <div className={isReplied ? 'w-3/4' : 'w-1/2'}>
+          <div
+            className={`flex flex-col items-left ${
+              isReplied ? 'w-3/4' : 'w-1/2'
+            }`}
+          >
             <div className="flex flex-col items-left w-full">
-              {comments?.map((comment) => (
-                <div key={comment._id}>
-                  <SingleComment
-                    commentData={comment}
-                    deleteComment={deleteComment}
-                    saveChanges={saveChangesAfterEditing}
-                  />
-                </div>
-              ))}
+              {comments?.length ? (
+                <>
+                  {comments?.map((comment) => (
+                    <div key={comment._id} className="mb-3">
+                      <SingleComment
+                        commentData={comment}
+                        deleteComment={deleteComment}
+                        saveChanges={saveChangesAfterEditing}
+                        replyToComment={replyToComment}
+                        isReplied={isReplied}
+                      />
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <p className="text-left">There is no comments yet...</p>
+              )}
             </div>
           </div>
         </div>
