@@ -1,39 +1,49 @@
 export const Textarea = (props) => {
+  let error = null;
+  if (props.errorMessage) {
+    error = Object.keys(props.errorMessage)
+      ? props.errorMessage[props.name]?.message
+      : null;
+  }
+
   return (
-    <div className="flex justify-center">
-      <div className="mb-3 w-full">
-        {/* <label
-          htmlFor="exampleFormControlTextarea1"
-          className="form-label inline-block mb-2 text-gray-700"
-        >
-          Example textarea
-        </label> */}
-        <textarea
-          className="
+    <>
+      {props.isLabled ? (
+        <label htmlFor={props.id} className="text-left text-gray-400">
+          {`${props.name.charAt(0).toUpperCase()}${props.name.slice(1)}`}
+        </label>
+      ) : null}
+      <div className="flex justify-center">
+        <div className="w-full">
+          <textarea
+            className="
         form-control
         block
         w-full
-        px-3
-        py-1.5
+        px-6
+        py-3
         resize-none
         text-base
         font-normal
-        text-gray-700
         bg-white bg-clip-padding
-        border border-solid border-gray-300
-        rounded
+        border border-solid border-slate-300
+        rounded-md
         transition
         ease-in-out
-        m-0
-        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+        mb-1
+        focus:border-sky-500 focus:outline-none
       "
-          id="textArea"
-          rows="3"
-          placeholder="Leave a comment..."
-          value={props.value}
-          onChange={(e) => props.onChange(e)}
-        ></textarea>
+            id={props.id}
+            rows={props.rows}
+            name={props.name}
+            placeholder={props.placeholder}
+            value={props.value}
+            onChange={(e) => props.onChange(e)}
+            {...props.register}
+          ></textarea>
+          <p className="text-red-500 mb-4 text-sm self-start">{error}</p>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

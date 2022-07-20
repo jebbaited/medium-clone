@@ -9,7 +9,7 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
     : `/page-${currentPage}`;
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between mb-1">
       <div className="self-start">
         <div className="flex">
           <Link to={pathToProfile}>
@@ -27,16 +27,16 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
           <div className="flex flex-col items-start">
             <div className="self-start">
               <Link to={pathToProfile}>
-                <p className="text-emerald-500 text-left">
+                <p className="text-emerald-500 text-left min-w-[100px] max-w-[220px] break-words">
                   {creatorData.name ? creatorData.name : 'Unknown user'}
                 </p>
               </Link>
             </div>
-            <p>{dateCreated}</p>
+            <p className="text-left">{dateCreated}</p>
           </div>
         </div>
       </div>
-      <div className="self-end">
+      <div className="self-center">
         <button
           className={`${
             likesInfo.isLikedByCurrentUser

@@ -24,36 +24,21 @@ export const Input = ({
     <>
       {isLabled ? (
         <>
-          {' '}
-          <div className="flex flex-col">
-            <label htmlFor={id} className="self-start text-gray-400">
-              {`${name.charAt(0).toUpperCase()}${name.slice(1)}`}
-            </label>
-            <input
-              id={id}
-              type={type}
-              placeholder={placeholder}
-              {...register}
-              className={cls}
-            />
-            <p className="text-red-500 mb-4 text-sm self-start">{error}</p>
-          </div>
+          <label htmlFor={id} className="text-left text-gray-400">
+            {`${name.charAt(0).toUpperCase()}${name.slice(1)}`}
+          </label>
         </>
-      ) : (
-        <>
-          {' '}
-          <div className="flex flex-col">
-            <input
-              id={id}
-              type={type}
-              placeholder={placeholder}
-              {...register}
-              className={cls}
-            />
-            <p className="text-red-500 mb-4 text-sm self-start">{error}</p>
-          </div>
-        </>
-      )}
+      ) : null}
+      <div>
+        <input
+          id={id}
+          type={type}
+          placeholder={placeholder}
+          {...register}
+          className={cls}
+        />
+        <p className="text-red-500 mb-4 text-sm self-start">{error}</p>
+      </div>
     </>
   );
 };

@@ -64,7 +64,7 @@ export const ProfilePage = () => {
           </div>
           <div className="flex justify-center">
             <div className="flex flex-col justify-center w-1/2 mt-8">
-              <p className="mr-10 self-start ml-10">User's posts</p>
+              <h1>User's posts</h1>
               <div className="w-full self-center">
                 {userPosts.map((post) => (
                   <Post post={post} key={post._id} />
