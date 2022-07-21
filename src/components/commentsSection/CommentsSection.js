@@ -76,39 +76,41 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
     <>
       <div className="flex justify-center">
         <div className={isReplied ? 'w-full' : 'w-1/2'}>
-          <div className="flex flex justify-start w-full mt-5">
-            <img src={imgSrc(currentUser)} className="smallAvatar" />
-            <div className="w-full">
-              <Textarea
-                id="commentField"
-                rows="3"
-                name="comment"
-                placeholder="Leave a comment..."
-                onChange={handleNewComment}
-                value={newCommentText}
-              />
-              <div className="flex justify-end">
-                <div className="mr-1">
-                  <Button
-                    onClick={cancel}
-                    className={`bg-white text-gray-400 hover:bg-white ${
-                      isReplied ? 'px-1 py-1 text-sm' : ''
-                    }`}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-                <div>
-                  <Button
-                    onClick={createComment}
-                    className={isReplied ? 'px-1 py-1 text-sm' : ''}
-                  >
-                    Post
-                  </Button>
+          {currentUser && (
+            <div className="flex flex justify-start w-full mt-5">
+              <img src={imgSrc(currentUser)} className="smallAvatar" />
+              <div className="w-full">
+                <Textarea
+                  id="commentField"
+                  rows="3"
+                  name="comment"
+                  placeholder="Leave a comment..."
+                  onChange={handleNewComment}
+                  value={newCommentText}
+                />
+                <div className="flex justify-end">
+                  <div className="mr-1">
+                    <Button
+                      onClick={cancel}
+                      className={`bg-white text-gray-400 hover:bg-white ${
+                        isReplied ? 'px-1 py-1 text-sm' : ''
+                      }`}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  <div>
+                    <Button
+                      onClick={createComment}
+                      className={isReplied ? 'px-1 py-1 text-sm' : ''}
+                    >
+                      Post
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

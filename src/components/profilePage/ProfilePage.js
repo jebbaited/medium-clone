@@ -5,6 +5,7 @@ import { imgSrc } from '../../helpers/chooseAvatarImage';
 import axios from '../../api/axios';
 import { useNavigate } from 'react-router';
 import { Post } from '../post/Post';
+import { Pagination } from '../pagination/Pagination';
 
 export const ProfilePage = () => {
   const [userPosts, setUserPosts] = useState([]);
@@ -23,7 +24,7 @@ export const ProfilePage = () => {
       });
       // для отображения постов данного пользователя от новых к старым
       console.log(response.data);
-      setUserPosts([...response.data.data.reverse()]);
+      setUserPosts(response.data.data.reverse());
     } catch (error) {}
   };
 
@@ -70,6 +71,7 @@ export const ProfilePage = () => {
                   <Post post={post} key={post._id} />
                 ))}
               </div>
+              <Pagination />
             </div>
           </div>
         </>

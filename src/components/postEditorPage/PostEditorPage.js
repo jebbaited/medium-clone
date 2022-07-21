@@ -11,20 +11,19 @@ import { Textarea } from '../../UI/Textarea';
 export const PostEditorPage = () => {
   const [errorFromServer, setErrorFromServer] = useState(null);
   const params = useParams();
+  const postId = params.id;
 
   const currentPost = useSelector((state) => state.posts.singlePost);
   const currentUser = useSelector((state) => state.user.user);
 
-  const postId = params.id;
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      // image: new File(),
+      // image: new File([currentPost.image], ),
       title: currentPost.title,
       description: currentPost.description,
       text: currentPost.fullText,

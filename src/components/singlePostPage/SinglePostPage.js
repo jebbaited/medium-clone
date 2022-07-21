@@ -53,7 +53,7 @@ export const SinglePostPage = () => {
             IsCreatorCurrentUser={checkCreatorOfPost()}
           />
           <div className="flex justify-center">
-            <div className="w-1/2 flex flex-col">
+            <div className="w-1/2 flex flex-col mb-4">
               <div className="self-start mt-4">
                 <Button
                   onClick={isShowedComments}

@@ -54,7 +54,7 @@ export const SingleComment = ({
 
   const findCurrentUserLikesForComment = (likesOfAllUsers) => {
     if (currentUser) {
-      const isLiked = likesOfAllUsers.includes(currentUser._id);
+      const isLiked = likesOfAllUsers.includes(currentUser?._id);
       return isLiked;
     }
     return false;
@@ -135,7 +135,7 @@ export const SingleComment = ({
               {commentData.text}
             </p>
           )}
-          {currentUser._id === commentData.commentedBy && !isEditing ? (
+          {currentUser?._id === commentData.commentedBy && !isEditing ? (
             <>
               <div className="flex justify-between">
                 <Button
