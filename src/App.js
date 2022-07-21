@@ -31,21 +31,21 @@ function App() {
     } catch (error) {}
   };
 
-  const getPosts = async () => {
-    try {
-      const response = await axios.get('/posts');
-      dispatch(savePaginationInfo(response.data.pagination));
-      navigate('/');
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getPosts = async () => {
+  //   try {
+  //     const response = await axios.get('/posts');
+  //     dispatch(savePaginationInfo(response.data.pagination));
+  //     navigate('/');
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   useEffect(() => {
     if (!userData && getItem('accessToken')) {
       getUser();
     }
-    getPosts();
+    // getPosts();
   }, []);
 
   return (
@@ -56,6 +56,10 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile/:userId/:name" element={<ProfilePage />} />
+        <Route
+          path="/profile/:userId/:name/page-:pageNumber"
+          element={<ProfilePage />}
+        />
         <Route path="/createPost" element={<CreatePost />} />
         <Route path="/post/:postId/:title" element={<SinglePostPage />} />
         <Route path="/post/editor/:id" element={<PostEditorPage />} />

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import axios from '../../api/axios';
-import { useNavigate } from 'react-router';
 import { Post } from '../post/Post';
 import { Pagination } from '../pagination/Pagination';
+import { savePaginationInfo, savePosts } from '../../store/postsSlice';
 
 export const ProfilePage = () => {
-  const [userPosts, setUserPosts] = useState([]);
   const [chosenUserInfo, setChosenUserInfo] = useState(null);
   const currentUser = useSelector((state) => state.user.user);
 
-  const navigate = useNavigate();
+  const userPosts = useSelector((state) => state.posts.posts);
+
+  const dispatch = useDispatch();
   const params = useParams();
 
   const getPostsOfUser = async () => {
@@ -22,9 +23,7 @@ export const ProfilePage = () => {
           postedBy: params.userId,
         },
       });
-      // для отображения постов данного пользователя от новых к старым
-      console.log(response.data);
-      setUserPosts(response.data.data.reverse());
+      dispatch(savePaginationInfo(response.data.pagination));
     } catch (error) {}
   };
 
@@ -67,11 +66,14 @@ export const ProfilePage = () => {
             <div className="flex flex-col justify-center w-1/2 mt-8">
               <h1>User's posts</h1>
               <div className="w-full self-center">
-                {userPosts.map((post) => (
-                  <Post post={post} key={post._id} />
-                ))}
+                {userPosts?.map((post) => {
+                  if (post.postedBy === chosenUserInfo._id)
+                    return <Post post={post} key={post._id} />;
+                })}
               </div>
-              <Pagination />
+              <div className="self-center">
+                <Pagination chosenUserInfo={chosenUserInfo} />
+              </div>
             </div>
           </div>
         </>

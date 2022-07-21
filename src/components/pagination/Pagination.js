@@ -14,7 +14,7 @@ import {
 } from '../../store/postsSlice';
 import { Button } from '../../UI/Button';
 
-export const Pagination = () => {
+export const Pagination = ({ chosenUserInfo }) => {
   const page = useSelector((state) => state.posts.pageNumber);
   const lastPageNumber = useSelector(
     (state) => state.posts.paginationInfo.lastPageNumber
@@ -29,6 +29,8 @@ export const Pagination = () => {
 
   let disableNextButton = false;
   let disableBackButton = false;
+
+  const pathToUserProfile = `/profile/${chosenUserInfo?._id}/${chosenUserInfo?.name}`;
 
   const goToThePreviousPage = async () => {
     dispatch(decreasePage());
@@ -63,12 +65,16 @@ export const Pagination = () => {
     try {
       const response = await axios.get('/posts', {
         params: {
+          postedBy: chosenUserInfo?._id || null,
           limit: limitForLastPosts || 10,
           skip: skip,
         },
       });
-      dispatch(savePosts([...response.data.data.reverse()]));
-      // dispatch(savePaginationInfo(response.data.pagination));
+
+      if (response.data.data.length) {
+        dispatch(savePosts(response.data.data.reverse()));
+      }
+
       dispatch(
         savePaginationInfo({
           lastPageNumber: lastPageNumber,
@@ -89,9 +95,8 @@ export const Pagination = () => {
       goToTheFirstPage();
     }
     // при нажатии на Home в хедере pageNumber становится undefined
-    if (page !== 1 && params.pageNumber === undefined) {
-      goToTheFirstPage();
-    }
+    if (page !== 1 && params.pageNumber === undefined) goToTheFirstPage();
+
     // при нажатии на кнопку "вперед" в браузере
     if (params.pageNumber > page) goToTheNextPage();
 
@@ -101,35 +106,77 @@ export const Pagination = () => {
 
   return (
     <div className="flex items-center">
-      <Link to="/">
-        <Button onClick={goToTheFirstPage} disable={disableBackButton}>
-          First page
-        </Button>
-      </Link>
-      <Link to={params.pageNumber === '2' ? '/' : `/page-${page - 1}`}>
-        <Button
-          onClick={goToThePreviousPage}
-          disabled={isLoading || disableBackButton}
-          className="ml-7"
-        >
-          Back
-        </Button>
-      </Link>
-      <h2 className="px-2">{page}</h2>
-      <Link to={`/page-${page + 1}`}>
-        <Button
-          onClick={goToTheNextPage}
-          disabled={isLoading || disableNextButton}
-          className="mr-7"
-        >
-          Next
-        </Button>
-      </Link>
-      <Link to={`/page-${lastPageNumber}`}>
-        <Button onClick={goToTheLastPage} disable={disableNextButton}>
-          Last page
-        </Button>
-      </Link>
+      {chosenUserInfo ? (
+        <>
+          <Link to={pathToUserProfile}>
+            <Button onClick={goToTheFirstPage} disable={disableBackButton}>
+              First page
+            </Button>
+          </Link>
+          <Link
+            to={
+              params.pageNumber === '2'
+                ? `${pathToUserProfile}`
+                : `${pathToUserProfile}/page-${page - 1}`
+            }
+          >
+            <Button
+              onClick={goToThePreviousPage}
+              disabled={isLoading || disableBackButton}
+              className="ml-7"
+            >
+              Back
+            </Button>
+          </Link>
+          <h2 className="px-2">{page}</h2>
+          <Link to={`${pathToUserProfile}/page-${page + 1}`}>
+            <Button
+              onClick={goToTheNextPage}
+              disabled={isLoading || disableNextButton}
+              className="mr-7"
+            >
+              Next
+            </Button>
+          </Link>
+          <Link to={`${pathToUserProfile}/page-${lastPageNumber}`}>
+            <Button onClick={goToTheLastPage} disable={disableNextButton}>
+              Last page
+            </Button>
+          </Link>
+        </>
+      ) : (
+        <>
+          <Link to="/">
+            <Button onClick={goToTheFirstPage} disable={disableBackButton}>
+              First page
+            </Button>
+          </Link>
+          <Link to={params.pageNumber === '2' ? '/' : `/page-${page - 1}`}>
+            <Button
+              onClick={goToThePreviousPage}
+              disabled={isLoading || disableBackButton}
+              className="ml-7"
+            >
+              Back
+            </Button>
+          </Link>
+          <h2 className="px-2">{page}</h2>
+          <Link to={`/page-${page + 1}`}>
+            <Button
+              onClick={goToTheNextPage}
+              disabled={isLoading || disableNextButton}
+              className="mr-7"
+            >
+              Next
+            </Button>
+          </Link>
+          <Link to={`/page-${lastPageNumber}`}>
+            <Button onClick={goToTheLastPage} disable={disableNextButton}>
+              Last page
+            </Button>
+          </Link>
+        </>
+      )}
     </div>
   );
 };
