@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { imgSrc } from '../helpers/chooseAvatarImage';
 
 export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
-  const currentPage = useSelector((state) => state.posts.pageNumber);
+  // const currentPage = useSelector((state) => state.posts.pageNumber);
   const pathToProfile = creatorData.id
     ? `/profile/${creatorData.id}/${creatorData.name}`
-    : `/page-${currentPage}`;
+    : '/';
 
   return (
     <div className="flex justify-between mb-1">

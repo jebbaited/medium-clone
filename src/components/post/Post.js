@@ -118,7 +118,6 @@ export const Post = (props) => {
               <p className="text-lg">{props.post.description}</p>
               <p className="mt-6 w-full">{props.post.fullText}</p>
             </div>
-            {/* <hr className="mt-3 border-gray-400" /> */}
           </div>
         </div>
       ) : (
