@@ -1,15 +1,14 @@
 import { useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Input } from '../../UI/Input';
 import { Button } from '../../UI/Button';
-import { saveUser } from '../../store/userSlice';
 
-const RegistrationPage = () => {
+export const RegistrationPage = () => {
   const {
     register,
     handleSubmit,
@@ -17,7 +16,6 @@ const RegistrationPage = () => {
   } = useForm({ mode: 'onChange' });
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [errorFromServer, setErrorFromServer] = useState(null);
 
   const onSubmit = async (formData) => {
@@ -35,10 +33,7 @@ const RegistrationPage = () => {
         profession: '',
         details: '',
       });
-      if (response.data) {
-        dispatch(saveUser(response.data));
-        navigate('/login');
-      }
+      if (response.data) navigate('/login');
     } catch (error) {
       setErrorFromServer(error.response.data.error);
     }
@@ -47,18 +42,18 @@ const RegistrationPage = () => {
   const buttonDisabled = Object.keys(errors).length ? true : false;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center min-width-640">
       <div className="flex flex-col justify-end flex-wrap w-96">
         <h1>Sign up</h1>
         <Link to="/login">
-          <p className="text-sm text-emerald-500 pb-4">Have an account?</p>
+          <p className="text-emerald-500 pb-4">Have an account?</p>
         </Link>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col justify-center"
         >
           {errorFromServer && (
-            <div className="errorFromServer">{errorFromServer}</div>
+            <div className="error-from-server">{errorFromServer}</div>
           )}
           <Input
             id="userNameInputForm"
@@ -105,5 +100,3 @@ const RegistrationPage = () => {
     </div>
   );
 };
-
-export default RegistrationPage;

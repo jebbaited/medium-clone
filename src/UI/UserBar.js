@@ -15,7 +15,7 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
           <Link to={pathToProfile}>
             <div>
               <img
-                className="mediumAvatar"
+                className="medium-avatar"
                 src={
                   creatorData.avatar
                     ? creatorData.avatar
@@ -24,10 +24,10 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
               />
             </div>
           </Link>
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-start break-all min-w-[100px] ">
             <div className="self-start">
               <Link to={pathToProfile}>
-                <p className="text-emerald-500 text-left min-w-[100px] max-w-[220px] break-words">
+                <p className="text-emerald-500 text-left">
                   {creatorData.name ? creatorData.name : 'Unknown user'}
                 </p>
               </Link>
@@ -40,15 +40,15 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
         <button
           className={`${
             likesInfo.isLikedByCurrentUser
-              ? 'likesButton bg-emerald-500 text-white'
-              : 'likesButton'
+              ? 'likes-button bg-emerald-500 text-white'
+              : 'likes-button'
           }`}
           onClick={putLike}
         >
-          <div className="flex justify-center">
+          <div className="flex justify-center items-center">
             <div>
               <svg
-                className="h-5 w-5"
+                className="h-4 w-4 lg:h-5 lg:w-5"
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 stroke="currentColor"

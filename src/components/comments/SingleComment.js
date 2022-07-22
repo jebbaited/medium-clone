@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+
+import { CommentsSection } from './CommentsSection';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import { timeFromNow } from '../../helpers/convertDate';
 import { Button } from '../../UI/Button';
+import { Loader } from '../../UI/Loader';
 import { Textarea } from '../../UI/Textarea';
 import { UserBar } from '../../UI/UserBar';
-import { CommentsSection } from './CommentsSection';
 
 export const SingleComment = ({
   commentData,
@@ -43,13 +45,17 @@ export const SingleComment = ({
   };
 
   const setLikeForComment = async () => {
-    await axios.put(`/comments/like/${commentData._id}`);
-    setCommentLikesInfo({
-      isLikedByCurrentUser: !commentLikesInfo.isLikedByCurrentUser,
-      amountOfLikes: commentLikesInfo.isLikedByCurrentUser
-        ? commentLikesInfo.amountOfLikes - 1
-        : commentLikesInfo.amountOfLikes + 1,
-    });
+    if (currentUser) {
+      try {
+        await axios.put(`/comments/like/${commentData._id}`);
+        setCommentLikesInfo({
+          isLikedByCurrentUser: !commentLikesInfo.isLikedByCurrentUser,
+          amountOfLikes: commentLikesInfo.isLikedByCurrentUser
+            ? commentLikesInfo.amountOfLikes - 1
+            : commentLikesInfo.amountOfLikes + 1,
+        });
+      } catch (error) {}
+    }
   };
 
   const findCurrentUserLikesForComment = (likesOfAllUsers) => {
@@ -116,14 +122,14 @@ export const SingleComment = ({
 
               <div className="flex justify-end mb-1">
                 <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
                   onClick={cancelEditing}
                 >
                   Cancel
                 </Button>
 
                 <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white"
+                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
                   onClick={saveAndCancel}
                 >
                   Save
@@ -131,7 +137,7 @@ export const SingleComment = ({
               </div>
             </>
           ) : (
-            <p className="break-words text-left text-black mb-1">
+            <p className="break-words text-left text-black mb-1 min-width-230">
               {commentData.text}
             </p>
           )}
@@ -139,7 +145,7 @@ export const SingleComment = ({
             <>
               <div className="flex justify-between">
                 <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white text-left lg:px-0 lg:py-0 mr-2"
                   onClick={replyClicked}
                   disabled={isReplied}
                 >
@@ -148,14 +154,14 @@ export const SingleComment = ({
 
                 <div className="flex">
                   <Button
-                    className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
                     onClick={editComment}
                   >
                     Edit
                   </Button>
 
                   <Button
-                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white"
+                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
                     onClick={() => deleteComment(commentData._id)}
                   >
                     Delete
@@ -166,7 +172,7 @@ export const SingleComment = ({
           ) : (
             <div className="text-start">
               <Button
-                className="px-0 py-0 bg-white text-gray-400 text-xs mr-2 hover:bg-white"
+                className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
                 onClick={replyClicked}
                 disabled={isReplied}
               >
@@ -186,7 +192,7 @@ export const SingleComment = ({
           ) : null}
         </div>
       ) : (
-        <div>Loading...</div>
+        <Loader />
       )}
     </>
   );

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router';
+
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { Button } from '../../UI/Button';
@@ -68,12 +69,12 @@ export const PostEditorPage = () => {
   const buttonDisabled = Object.keys(errors).length ? true : false;
 
   return (
-    <div className="flex justify-center mt-6">
+    <div className="flex justify-center mt-6 min-width-640">
       <form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
         <div className="flex flex-col">
           <h1>Update your post</h1>
           {errorFromServer && (
-            <div className="errorFromServer">{errorFromServer}</div>
+            <div className="error-from-server">{errorFromServer}</div>
           )}
           <Input
             id="postImageInput"

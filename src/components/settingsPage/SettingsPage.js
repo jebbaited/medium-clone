@@ -1,14 +1,16 @@
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+
+import axios from '../../api/axios';
 import { Input } from '../../UI/Input';
 import { Button } from '../../UI/Button';
 import Modal from '../../UI/Modal';
+import { Textarea } from '../../UI/Textarea';
+import { Loader } from '../../UI/Loader';
 import validateRules from '../../helpers/validateRules';
 import { removeItem } from '../../helpers/persistanceStorage';
-import axios from '../../api/axios';
 import { clearUser, saveUser } from '../../store/userSlice';
-import { Textarea } from '../../UI/Textarea';
 
 export const SettingsPage = () => {
   const user = useSelector((state) => state.user.user);
@@ -85,9 +87,9 @@ export const SettingsPage = () => {
   return (
     <>
       {user ? (
-        <div className="flex flex-col items-center">
-          <div className="flex flex-col justify-end flex-wrap w-96">
-            <h1 className="text-4xl mb-2">Your Settings</h1>
+        <div className="flex flex-col items-center min-width-640 ">
+          <div className="flex flex-col justify-end flex-wrap w-1/2 ">
+            <h1 className="mb-2">Your Settings</h1>
 
             <form
               className="flex flex-col justify-center"
@@ -148,7 +150,7 @@ export const SettingsPage = () => {
           </div>
         </div>
       ) : (
-        <div>Loading...</div>
+        <Loader />
       )}
     </>
   );

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
+
 import axios from '../../api/axios';
 import { Button } from '../../UI/Button';
-import { CommentsSection } from '../commentsSection/CommentsSection';
-import { Post } from '../post/Post';
+import { Loader } from '../../UI/Loader';
+import { CommentsSection } from '../comments/CommentsSection';
+import { Post } from './Post';
 
 export const SinglePostPage = () => {
   const [postToRender, setPostToRender] = useState(null);
@@ -22,7 +24,7 @@ export const SinglePostPage = () => {
 
   const deletePostById = async () => {
     try {
-      axios.delete(`/posts/${postToRender._id}`);
+      await axios.delete(`/posts/${postToRender._id}`);
       console.log('Successfully deleted');
       navigate(`/profile/${currentUser._id}/${currentUser.name}`);
     } catch (error) {}
@@ -46,13 +48,15 @@ export const SinglePostPage = () => {
     <>
       {postToRender ? (
         <>
-          <Post
-            post={postToRender}
-            isSinglePostPage={true}
-            deletePostById={deletePostById}
-            IsCreatorCurrentUser={checkCreatorOfPost()}
-          />
-          <div className="flex justify-center">
+          <div className="min-width-640">
+            <Post
+              post={postToRender}
+              isSinglePostPage={true}
+              deletePostById={deletePostById}
+              IsCreatorCurrentUser={checkCreatorOfPost()}
+            />
+          </div>
+          <div className="flex justify-center min-width-640">
             <div className="w-1/2 flex flex-col mb-4">
               <div className="self-start mt-4">
                 <Button
@@ -68,7 +72,7 @@ export const SinglePostPage = () => {
           {showComments ? <CommentsSection /> : null}
         </>
       ) : (
-        <div>Loading...</div>
+        <Loader />
       )}
     </>
   );

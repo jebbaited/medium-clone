@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 import axios from '../../api/axios';
 import validateRules from '../../helpers/validateRules';
 import { setItem } from '../../helpers/persistanceStorage';
@@ -10,7 +11,7 @@ import { Input } from '../../UI/Input';
 import { Button } from '../../UI/Button';
 import { saveUser } from '../../store/userSlice';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const {
     register,
     handleSubmit,
@@ -51,18 +52,18 @@ const LoginPage = () => {
   const buttonDisabled = Object.keys(errors).length ? true : false;
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center min-width-640">
       <div className="flex flex-col justify-end flex-wrap w-96">
         <h1>Sign in</h1>
         <Link to="/register">
-          <p className="text-sm text-emerald-500 pb-4">Need an account?</p>
+          <p className="text-emerald-500 pb-4">Need an account?</p>
         </Link>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="flex flex-col justify-center"
         >
           {errorFromServer && (
-            <div className="errorFromServer">{errorFromServer}</div>
+            <div className="error-from-server">{errorFromServer}</div>
           )}
           <Input
             id="emailLoginInputForm"
@@ -95,5 +96,3 @@ const LoginPage = () => {
     </div>
   );
 };
-
-export default LoginPage;

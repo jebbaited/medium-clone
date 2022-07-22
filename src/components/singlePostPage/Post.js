@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+
 import axios from '../../api/axios';
 import { reSaveOnePost, saveSinglePost } from '../../store/postsSlice';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
@@ -40,10 +41,12 @@ export const Post = (props) => {
   };
 
   const putLikeForPost = async () => {
-    try {
-      await axios.put(`/posts/like/${props.post._id}`);
-      await getPostById();
-    } catch (error) {}
+    if (currentUser) {
+      try {
+        await axios.put(`/posts/like/${props.post._id}`);
+        await getPostById();
+      } catch (error) {}
+    }
   };
 
   // Для того, чтобы заново получить пост, которому был поставлен лайк и обновить их количество
@@ -110,19 +113,21 @@ export const Post = (props) => {
 
           <img
             src={postImgSrc(props.post.image)}
-            className="mt-4 mediumPostImage"
+            className="mt-4 medium-post-image"
           />
           <div className="w-1/2 break-words">
             <div className="flex flex-col items-start text-left">
-              <h2>{props.post.title}</h2>
-              <p className="text-lg">{props.post.description}</p>
-              <p className="mt-6 w-full">{props.post.fullText}</p>
+              <div className="w-full">
+                <h2>{props.post.title}</h2>
+                <p className="text-lg">{props.post.description}</p>
+                <p className="mt-6">{props.post.fullText}</p>
+              </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="m-10">
-          <div>
+        <div className="m-3 lg:m-8">
+          <div className="min-width-230">
             <UserBar
               creatorData={creatorData}
               dateCreated={dateCreated}
@@ -136,7 +141,7 @@ export const Post = (props) => {
               >
                 <div className="flex flex-col">
                   <div className="self-start w-full">
-                    <h2 className="text-xl">{props.post.title}</h2>
+                    <h2>{props.post.title}</h2>
                   </div>
                   <div className="self-start w-full">
                     <p>{props.post.description}</p>

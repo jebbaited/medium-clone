@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
+
 import axios from '../../api/axios';
 import { countPostsSkip } from '../../helpers/countPostsToSkip';
+import { Button } from '../../UI/Button';
 import {
   decreasePage,
   increasePage,
@@ -12,7 +14,6 @@ import {
   setCurrentPage,
   savePaginationInfo,
 } from '../../store/postsSlice';
-import { Button } from '../../UI/Button';
 
 export const Pagination = ({ chosenUserInfo }) => {
   const page = useSelector((state) => state.posts.pageNumber);
@@ -98,7 +99,9 @@ export const Pagination = ({ chosenUserInfo }) => {
     if (page !== 1 && params.pageNumber === undefined) goToTheFirstPage();
 
     // при нажатии на кнопку "вперед" в браузере
-    if (params.pageNumber > page) goToTheNextPage();
+    if (params.pageNumber > page) {
+      goToTheNextPage();
+    }
 
     // при нажатии на кнопку "назад" в браузере
     if (params.pageNumber < page) goToThePreviousPage();
@@ -123,7 +126,7 @@ export const Pagination = ({ chosenUserInfo }) => {
             <Button
               onClick={goToThePreviousPage}
               disabled={isLoading || disableBackButton}
-              className="ml-7"
+              className="ml-2 lg:ml-7"
             >
               Back
             </Button>
@@ -133,7 +136,7 @@ export const Pagination = ({ chosenUserInfo }) => {
             <Button
               onClick={goToTheNextPage}
               disabled={isLoading || disableNextButton}
-              className="mr-7"
+              className="mr-2 lg:mr-7"
             >
               Next
             </Button>
@@ -155,7 +158,7 @@ export const Pagination = ({ chosenUserInfo }) => {
             <Button
               onClick={goToThePreviousPage}
               disabled={isLoading || disableBackButton}
-              className="ml-7"
+              className="ml-2 lg:ml-7"
             >
               Back
             </Button>
@@ -165,7 +168,7 @@ export const Pagination = ({ chosenUserInfo }) => {
             <Button
               onClick={goToTheNextPage}
               disabled={isLoading || disableNextButton}
-              className="mr-7"
+              className="mr-2 lg:mr-7"
             >
               Next
             </Button>

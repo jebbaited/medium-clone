@@ -20,8 +20,8 @@ export const Textarea = (props) => {
         form-control
         block
         w-full
-        px-6
-        py-3
+        px-2
+        py-1
         resize-none
         text-base
         font-normal
@@ -32,6 +32,8 @@ export const Textarea = (props) => {
         ease-in-out
         mb-1
         focus:border-sky-500 focus:outline-none
+        text-sm lg:text-base
+        lg:px-6 lg:py-3
       "
             id={props.id}
             rows={props.rows}

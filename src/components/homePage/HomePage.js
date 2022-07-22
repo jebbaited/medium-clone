@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
+
 import axios from '../../api/axios';
-import { savePaginationInfo, savePosts } from '../../store/postsSlice';
+import { savePaginationInfo } from '../../store/postsSlice';
+import { Loader } from '../../UI/Loader';
 import { Pagination } from '../pagination/Pagination';
-import { Post } from '../post/Post';
+import { Post } from '../singlePostPage/Post';
 
 export const HomePage = () => {
   const params = useParams();
@@ -16,7 +18,6 @@ export const HomePage = () => {
     try {
       const response = await axios.get('/posts');
       dispatch(savePaginationInfo(response.data.pagination));
-      // navigate('/');
     } catch (error) {
       console.log(error);
     }
@@ -27,14 +28,14 @@ export const HomePage = () => {
   }, []);
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center min-width-640">
       <div className="flex flex-col items-center w-2/3 mt-8">
         <div className="w-2/3">
           <h1>Global Feed</h1>
           {posts ? (
             posts?.map((post) => <Post post={post} key={post._id} />)
           ) : (
-            <div>Loading...</div>
+            <Loader />
           )}
         </div>
         <Pagination />
