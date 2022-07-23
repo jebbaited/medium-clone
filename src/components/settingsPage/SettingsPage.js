@@ -74,11 +74,32 @@ export const SettingsPage = () => {
   };
 
   const deleteUser = async () => {
+    await getAllUserPosts();
     try {
       await axios.delete(`/users/${user._id}`);
       removeItem('accessToken');
       dispatch(clearUser(null));
       navigate('/');
+    } catch (error) {}
+  };
+
+  // удалить все посты юзера вместе с его профилем
+  const getAllUserPosts = async () => {
+    try {
+      const response = await axios.get('/posts', {
+        params: {
+          postedBy: user._id,
+        },
+      });
+      response.data.data.map((post) => {
+        deletePost(post._id);
+      });
+    } catch (error) {}
+  };
+
+  const deletePost = async (postId) => {
+    try {
+      await axios.delete(`/posts/${postId}`);
     } catch (error) {}
   };
 
