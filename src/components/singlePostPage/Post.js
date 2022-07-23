@@ -119,7 +119,7 @@ export const Post = (props) => {
             <div className="flex flex-col items-start text-left">
               <div className="w-full">
                 <h2>{props.post.title}</h2>
-                <p className="text-lg">{props.post.description}</p>
+                <p className="lg:text-lg">{props.post.description}</p>
                 <p className="mt-6">{props.post.fullText}</p>
               </div>
             </div>
