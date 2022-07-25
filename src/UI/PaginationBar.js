@@ -1,4 +1,5 @@
-import { useParams } from 'react-router';
+import { useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router-dom';
 import { Button } from './Button';
 
@@ -15,15 +16,29 @@ export const PaginationBar = ({
   isNavigateToProfile,
 }) => {
   const params = useParams();
+  const navigate = useNavigate();
 
   const pathToUserProfile = `/profile/${params.userId}/${params.name}`;
+
+  let pageToDisplay = params.pageNumber || 1;
+
+  useEffect(() => {
+    if (params.pageNumber > lastPageNumber && lastPageNumber) {
+      pageToDisplay = lastPageNumber;
+      navigate(
+        isNavigateToProfile
+          ? `${pathToUserProfile}/page-${lastPageNumber}`
+          : `/page-${lastPageNumber}`
+      );
+    }
+  }, [lastPageNumber]);
 
   return (
     <div className="flex items-center">
       {isNavigateToProfile ? (
         <>
           <Link to={pathToUserProfile}>
-            <Button onClick={firstPage} disable={disableBackButton}>
+            <Button onClick={firstPage} disabled={disableBackButton}>
               First page
             </Button>
           </Link>
@@ -42,7 +57,7 @@ export const PaginationBar = ({
               Back
             </Button>
           </Link>
-          <h2 className="px-2">{page}</h2>
+          <h2 className="px-2">{pageToDisplay}</h2>
           <Link to={`${pathToUserProfile}/page-${page + 1}`}>
             <Button
               onClick={nextPage}
@@ -53,7 +68,7 @@ export const PaginationBar = ({
             </Button>
           </Link>
           <Link to={`${pathToUserProfile}/page-${lastPageNumber}`}>
-            <Button onClick={lastPage} disable={disableNextButton}>
+            <Button onClick={lastPage} disabled={disableNextButton}>
               Last page
             </Button>
           </Link>
@@ -61,7 +76,7 @@ export const PaginationBar = ({
       ) : (
         <>
           <Link to="/">
-            <Button onClick={firstPage} disable={disableBackButton}>
+            <Button onClick={firstPage} disabled={disableBackButton}>
               First page
             </Button>
           </Link>
@@ -74,7 +89,7 @@ export const PaginationBar = ({
               Back
             </Button>
           </Link>
-          <h2 className="px-2">{page}</h2>
+          <h2 className="px-2">{pageToDisplay}</h2>
           <Link to={`/page-${page + 1}`}>
             <Button
               onClick={nextPage}
@@ -85,7 +100,7 @@ export const PaginationBar = ({
             </Button>
           </Link>
           <Link to={`/page-${lastPageNumber}`}>
-            <Button onClick={lastPage} disable={disableNextButton}>
+            <Button onClick={lastPage} disabled={disableNextButton}>
               Last page
             </Button>
           </Link>

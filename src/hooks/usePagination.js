@@ -33,6 +33,7 @@ export const usePagination = () => {
 
   useEffect(() => {
     if (params.pageNumber === undefined && page === lastPageNumber) setPage(1);
+    if (params.pageNumber === undefined) setPage(1);
   }, [params.pageNumber === undefined]);
 
   return {
