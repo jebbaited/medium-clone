@@ -5,9 +5,6 @@ import { imgSrc } from '../../helpers/chooseAvatarImage';
 
 export const Header = () => {
   const currentUser = useSelector((state) => state.user.user);
-  const currentPage = useSelector((state) => state.posts.pageNumber);
-
-  const path = currentPage === 1 ? '/' : `/page-${currentPage}`;
 
   return (
     <nav className="flex items-center justify-end flex-wrap bg-white-500 py-2 px-4 h-14 max-w-screen-2xl min-width-640 ">

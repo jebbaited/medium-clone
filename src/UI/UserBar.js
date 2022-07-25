@@ -1,9 +1,7 @@
-import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { imgSrc } from '../helpers/chooseAvatarImage';
 
 export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
-  // const currentPage = useSelector((state) => state.posts.pageNumber);
   const pathToProfile = creatorData.id
     ? `/profile/${creatorData.id}/${creatorData.name}`
     : '/';
