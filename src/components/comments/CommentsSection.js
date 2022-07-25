@@ -12,6 +12,7 @@ import { Textarea } from '../../UI/Textarea';
 export const CommentsSection = ({ commentIdToReply, isReplied }) => {
   const [comments, setComments] = useState(null);
   const [newCommentText, setNewCommentText] = useState('');
+  const [commentError, setCommentError] = useState(null);
   const params = useParams();
 
   const currentUser = useSelector((state) => state.user.user);
@@ -39,7 +40,9 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
       });
       await getAllComments();
       setNewCommentText('');
-    } catch (error) {}
+    } catch (error) {
+      setCommentError(error.response.data.error[0].message);
+    }
   };
 
   const deleteComment = async (commentId) => {
@@ -64,6 +67,7 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
 
   const cancel = () => {
     setNewCommentText('');
+    setCommentError(null);
   };
 
   const handleNewComment = (event) => {
@@ -93,6 +97,9 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
                       onChange={handleNewComment}
                       value={newCommentText}
                     />
+                    <p className="text-left text-red-500 mb-1">
+                      {commentError}
+                    </p>
                     <div className="flex justify-end">
                       <div className="mr-1">
                         <Button
@@ -108,6 +115,7 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
                         <Button
                           onClick={createComment}
                           className={isReplied ? 'px-1 py-1 text-sm' : ''}
+                          disabled={commentError}
                         >
                           Post
                         </Button>
