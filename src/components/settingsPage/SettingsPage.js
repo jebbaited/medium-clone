@@ -74,7 +74,7 @@ export const SettingsPage = () => {
   };
 
   const deleteUser = async () => {
-    await getAllUserPosts();
+    await deleteAllUserPosts();
     try {
       await axios.delete(`/users/${user._id}`);
       removeItem('accessToken');
@@ -84,7 +84,7 @@ export const SettingsPage = () => {
   };
 
   // удалить все посты юзера вместе с его профилем
-  const getAllUserPosts = async () => {
+  const deleteAllUserPosts = async () => {
     try {
       const response = await axios.get('/posts', {
         params: {

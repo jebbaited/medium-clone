@@ -5,12 +5,15 @@ import { Link, useParams } from 'react-router-dom';
 import { imgSrc } from '../../helpers/chooseAvatarImage';
 import axios from '../../api/axios';
 import { Post } from '../singlePostPage/Post';
-import { Pagination } from '../pagination/Pagination';
 import { savePaginationInfo, savePosts } from '../../store/postsSlice';
 import { Loader } from '../../UI/Loader';
+import { usePagination } from '../../hooks/usePagination';
+import { PaginationBar } from '../../UI/PaginationBar';
+import { countPostsSkip } from '../../helpers/countPostsToSkip';
 
 export const ProfilePage = () => {
   const [chosenUserInfo, setChosenUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const currentUser = useSelector((state) => state.user.user);
   const userPosts = useSelector((state) => state.posts.posts);
@@ -19,21 +22,20 @@ export const ProfilePage = () => {
     (state) => state.posts.paginationInfo.lastPageNumber
   );
   const total = useSelector((state) => state.posts.paginationInfo.total);
+  const limit = useSelector((state) => state.posts.paginationInfo.limit);
 
   const dispatch = useDispatch();
   const params = useParams();
 
-  const getPostsOfUser = async () => {
-    try {
-      const response = await axios.get('/posts', {
-        params: {
-          postedBy: params.userId,
-        },
-      });
-      dispatch(savePaginationInfo(response.data.pagination));
-      dispatch(savePosts(response.data.data.reverse()));
-    } catch (error) {}
-  };
+  const {
+    page,
+    disableNextButton,
+    disableBackButton,
+    nextPage,
+    prevPage,
+    firstPage,
+    lastPage,
+  } = usePagination();
 
   const getUserInfo = async () => {
     try {
@@ -42,10 +44,46 @@ export const ProfilePage = () => {
     } catch (error) {}
   };
 
+  const getPostsByParams = async (pageToSkip) => {
+    const currentPage = lastPageNumber - (pageToSkip - 1 || 0);
+    const skip = countPostsSkip(currentPage, lastPageNumber, total, limit);
+    const limitForLastPosts =
+      skip === 0 ? limit - (lastPageNumber * limit - total) : 0;
+
+    try {
+      setIsLoading(true);
+      const response = await axios.get('/posts', {
+        params: {
+          postedBy: params.userId,
+          limit: limitForLastPosts || 10,
+          skip: skip || 0,
+        },
+      });
+
+      if (response.data.data.length) {
+        dispatch(savePosts(response.data.data.reverse()));
+      }
+
+      dispatch(
+        savePaginationInfo({
+          lastPageNumber: lastPageNumber,
+          total: response.data.pagination.total,
+          limit: 10,
+        })
+      );
+
+      setIsLoading(false);
+    } catch (error) {}
+  };
+
   useEffect(() => {
-    getPostsOfUser();
+    getPostsByParams();
     getUserInfo();
   }, [params.userId]);
+
+  useEffect(() => {
+    getPostsByParams(params.pageNumber);
+  }, [params.pageNumber, total]);
 
   return (
     <>
@@ -58,7 +96,9 @@ export const ProfilePage = () => {
                 className="rounded-full object-cover h-16 w-16 mb-1 lg:h-24 lg:w-24 lg:mb-3"
               />
               <h2 className="font-bold">{chosenUserInfo.name}</h2>
-              <p className="mb-2">{chosenUserInfo.details}</p>
+              <div className="w-3/4">
+                <p className="mb-2 truncate">{chosenUserInfo.details}</p>
+              </div>
             </div>
             {chosenUserInfo._id === currentUser?._id ? (
               <div className="self-end w-1/2">
@@ -82,7 +122,18 @@ export const ProfilePage = () => {
 
               {lastPageNumber > 1 && (
                 <div className="self-center">
-                  <Pagination chosenUserInfo={chosenUserInfo} />
+                  <PaginationBar
+                    page={page}
+                    firstPage={firstPage}
+                    prevPage={prevPage}
+                    nextPage={nextPage}
+                    lastPage={lastPage}
+                    disableBackButton={disableBackButton}
+                    disableNextButton={disableNextButton}
+                    lastPageNumber={lastPageNumber}
+                    isLoading={isLoading}
+                    isNavigateToProfile={true}
+                  />
                 </div>
               )}
 
