@@ -5,7 +5,6 @@ const postsSlice = createSlice({
   initialState: {
     posts: null,
     singlePost: null,
-    pageNumber: 1,
     paginationInfo: {
       lastPageNumber: null,
       total: null,
@@ -25,18 +24,6 @@ const postsSlice = createSlice({
     saveSinglePost(state, action) {
       state.singlePost = { ...action.payload };
     },
-    increasePage(state, action) {
-      state.pageNumber = state.pageNumber + 1;
-    },
-    decreasePage(state, action) {
-      state.pageNumber = state.pageNumber - 1;
-    },
-    setDefaultPage(state, action) {
-      state.pageNumber = 1;
-    },
-    setCurrentPage(state, action) {
-      state.pageNumber = action.payload;
-    },
     savePaginationInfo(state, action) {
       state.paginationInfo = {
         lastPageNumber: Math.ceil(action.payload.total / action.payload.limit),
@@ -47,15 +34,7 @@ const postsSlice = createSlice({
   },
 });
 
-export const {
-  savePosts,
-  reSaveOnePost,
-  saveSinglePost,
-  increasePage,
-  decreasePage,
-  setDefaultPage,
-  setCurrentPage,
-  savePaginationInfo,
-} = postsSlice.actions;
+export const { savePosts, reSaveOnePost, saveSinglePost, savePaginationInfo } =
+  postsSlice.actions;
 
 export default postsSlice.reducer;
