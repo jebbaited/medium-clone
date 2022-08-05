@@ -1,14 +1,7 @@
-const dayjs = require('dayjs');
-const relativeTime = require('dayjs/plugin/relativeTime');
+import { DateTime } from 'luxon';
 
-export const convertDate = (date) => {
-  const convertedDate = dayjs(date).format('MMMM D, YYYY');
-  return convertedDate;
-};
+export const convertDate = (date) =>
+  DateTime.fromISO(date).toFormat('MMMM d, yyyy');
 
-export const timeFromNow = (date) => {
-  dayjs.extend(relativeTime);
-  const currentDate = dayjs(date).format();
-  const timeToDisplay = dayjs(currentDate).toNow(true);
-  return timeToDisplay;
-};
+export const timeFromNow = (date) =>
+  DateTime.fromISO(date).setLocale('en').toRelative();
