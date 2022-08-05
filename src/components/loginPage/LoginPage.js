@@ -32,11 +32,11 @@ export const LoginPage = () => {
         email: data.email,
         password: data.password,
       });
-      if (response.data) {
-        setItem('accessToken', response.data.token);
-        await getUserByToken();
-        navigate('/');
-      }
+      if (!response.data) return;
+
+      setItem('accessToken', response.data.token);
+      await getUserByToken();
+      navigate('/');
     } catch (error) {
       setErrorFromServer(error.response.data.error);
     }
@@ -46,10 +46,12 @@ export const LoginPage = () => {
     try {
       const response = await axios.get('/auth/user');
       dispatch(saveUser(response.data));
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const buttonDisabled = Object.keys(errors).length ? true : false;
+  const buttonDisabled = !!Object.keys(errors).length;
 
   return (
     <div className="flex flex-col items-center min-width-640">

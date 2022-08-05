@@ -37,7 +37,7 @@ export const CreatePostPage = () => {
     }
   };
 
-  const buttonDisabled = Object.keys(errors).length ? true : false;
+  const buttonDisabled = !!Object.keys(errors).length;
 
   return (
     <div className="flex justify-center mt-6 min-width-640">

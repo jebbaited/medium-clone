@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import axios from './api/axios';
@@ -20,18 +20,18 @@ function App() {
   const userData = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
 
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     try {
       const response = await axios.get('/auth/user');
       dispatch(saveUser(response.data));
     } catch (error) {}
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!userData && getItem('accessToken')) {
       getUser();
     }
-  }, []);
+  }, [getUser, userData]);
 
   return (
     <div className="App">

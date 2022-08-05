@@ -15,6 +15,9 @@ const postsSlice = createSlice({
     savePosts(state, action) {
       state.posts = [...action.payload];
     },
+    setInitialPostsState(state, action) {
+      state.posts = null;
+    },
     reSaveOnePost(state, action) {
       state.posts.forEach((post, index) => {
         if (post._id === action.payload._id)
@@ -34,7 +37,12 @@ const postsSlice = createSlice({
   },
 });
 
-export const { savePosts, reSaveOnePost, saveSinglePost, savePaginationInfo } =
-  postsSlice.actions;
+export const {
+  savePosts,
+  setInitialPostsState,
+  reSaveOnePost,
+  saveSinglePost,
+  savePaginationInfo,
+} = postsSlice.actions;
 
 export default postsSlice.reducer;

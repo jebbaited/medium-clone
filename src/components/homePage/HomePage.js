@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
 import axios from '../../api/axios';
 import { countPostsSkip } from '../../helpers/countPostsToSkip';
 import { usePagination } from '../../hooks/usePagination';
-import { savePaginationInfo, savePosts } from '../../store/postsSlice';
+import {
+  savePaginationInfo,
+  savePosts,
+  setInitialPostsState,
+} from '../../store/postsSlice';
 import { Loader } from '../../UI/Loader';
 import { PaginationBar } from '../../UI/PaginationBar';
 import { Post } from '../singlePostPage/Post';
@@ -32,54 +36,56 @@ export const HomePage = () => {
     lastPage,
   } = usePagination();
 
-  const getPostsByParams = async (pageToSkip) => {
-    const currentPage = lastPageNumber - (pageToSkip - 1 || 0);
-    const skip = countPostsSkip(currentPage, lastPageNumber, total, limit);
-    const limitForLastPosts =
-      skip === 0 ? limit - (lastPageNumber * limit - total) : 0;
+  const getPostsByParams = useCallback(
+    async (pageToSkip) => {
+      const currentPage = lastPageNumber - (pageToSkip - 1 || 0);
+      const skip = countPostsSkip(currentPage, lastPageNumber, total, limit);
+      const limitForLastPosts =
+        skip === 0 ? limit - (lastPageNumber * limit - total) : 0;
 
-    try {
-      setIsLoading(true);
-      const response = await axios.get('/posts', {
-        params: {
-          limit: limitForLastPosts || 10,
-          skip: skip,
-        },
-      });
+      try {
+        setIsLoading(true);
+        const response = await axios.get('/posts', {
+          params: {
+            limit: limitForLastPosts || 10,
+            skip: skip,
+          },
+        });
 
-      if (response.data.data.length) {
+        if (!response.data) return;
+
         dispatch(savePosts(response.data.data.reverse()));
+
+        dispatch(
+          savePaginationInfo({
+            lastPageNumber: lastPageNumber,
+            total: response.data.pagination.total,
+            limit: 10,
+          })
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
       }
-
-      dispatch(
-        savePaginationInfo({
-          lastPageNumber: lastPageNumber,
-          total: response.data.pagination.total,
-          limit: 10,
-        })
-      );
-      setIsLoading(false);
-    } catch (error) {}
-  };
+    },
+    [dispatch, lastPageNumber, limit, total]
+  );
 
   useEffect(() => {
-    getPostsByParams();
-  }, []);
-
-  useEffect(() => {
+    dispatch(setInitialPostsState());
     getPostsByParams(params.pageNumber);
-  }, [params.pageNumber, total]);
+  }, [dispatch, getPostsByParams, params.pageNumber, total]);
 
   return (
     <div className="flex justify-center min-width-640">
       <div className="flex flex-col items-center w-2/3 mt-8">
         <div className="w-2/3">
           <h1>Global Feed</h1>
-          {posts ? (
-            posts?.map((post) => <Post post={post} key={post._id} />)
-          ) : (
-            <Loader />
-          )}
+          {!posts && <Loader />}
+          {posts?.map((post) => (
+            <Post post={post} key={post._id} />
+          ))}
         </div>
         <PaginationBar
           page={page}

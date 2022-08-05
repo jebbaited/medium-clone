@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
@@ -9,32 +9,29 @@ export const usePagination = () => {
     (state) => state.posts.paginationInfo.lastPageNumber
   );
 
-  let disableNextButton = false;
-  let disableBackButton = false;
-
-  const goToThePreviousPage = () => {
+  const goToThePreviousPage = useCallback(() => {
     setPage(page - 1);
-  };
+  }, [page]);
 
-  const goToTheNextPage = () => {
+  const goToTheNextPage = useCallback(() => {
     setPage(page + 1);
-  };
+  }, [page]);
 
-  const goToTheFirstPage = () => {
+  const goToTheFirstPage = useCallback(() => {
     setPage(1);
-  };
+  }, []);
 
-  const goToTheLastPage = () => {
+  const goToTheLastPage = useCallback(() => {
     setPage(lastPageNumber);
-  };
+  }, [lastPageNumber]);
 
-  disableNextButton = page >= lastPageNumber ? true : false;
-  disableBackButton = page <= 1 ? true : false;
+  let disableNextButton = !!(page >= lastPageNumber);
+  let disableBackButton = !!(page <= 1);
 
   useEffect(() => {
-    if (params.pageNumber === undefined && page === lastPageNumber) setPage(1);
-    if (params.pageNumber === undefined) setPage(1);
-  }, [params.pageNumber === undefined]);
+    if (!params.pageNumber && page === lastPageNumber) setPage(1);
+    if (!params.pageNumber) setPage(1);
+  }, [lastPageNumber, page, params.pageNumber]);
 
   return {
     page,

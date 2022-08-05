@@ -14,6 +14,7 @@ export const UserBar = ({ creatorData, dateCreated, likesInfo, putLike }) => {
             <div>
               <img
                 className="medium-avatar"
+                alt="nothing"
                 src={
                   creatorData.avatar
                     ? creatorData.avatar

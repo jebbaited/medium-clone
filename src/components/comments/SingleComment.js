@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { CommentsSection } from './CommentsSection';
@@ -33,7 +33,13 @@ export const SingleComment = ({
 
   const currentUser = useSelector((state) => state.user.user);
 
-  const getUserById = async () => {
+  const findCurrentUserLikesForComment = useCallback(
+    (likesOfAllUsers) =>
+      currentUser && likesOfAllUsers.includes(currentUser._id),
+    [currentUser]
+  );
+
+  const getUserById = useCallback(async () => {
     try {
       const response = await axios.get(`/users/${commentData.commentedBy}`);
       setCreatorOfCommentData({
@@ -41,10 +47,12 @@ export const SingleComment = ({
         avatar: imgSrc(response.data),
         id: response.data._id,
       });
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [commentData]);
 
-  const setLikeForComment = async () => {
+  const setLikeForComment = useCallback(async () => {
     if (currentUser) {
       try {
         await axios.put(`/comments/like/${commentData._id}`);
@@ -54,17 +62,25 @@ export const SingleComment = ({
             ? commentLikesInfo.amountOfLikes - 1
             : commentLikesInfo.amountOfLikes + 1,
         });
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     }
-  };
+  }, [
+    commentData._id,
+    commentLikesInfo.amountOfLikes,
+    commentLikesInfo.isLikedByCurrentUser,
+    currentUser,
+  ]);
 
-  const findCurrentUserLikesForComment = (likesOfAllUsers) => {
-    if (currentUser) {
-      const isLiked = likesOfAllUsers.includes(currentUser?._id);
-      return isLiked;
-    }
-    return false;
-  };
+  const setInitialStates = useCallback(() => {
+    setDateCommentCreated(timeFromNow(commentData.dateCreated));
+    setCommentLikesInfo({
+      isLikedByCurrentUser: findCurrentUserLikesForComment(commentData.likes),
+      amountOfLikes: commentData.likes.length,
+    });
+    setEditedCommentText(commentData.text);
+  }, [findCurrentUserLikesForComment, commentData]);
 
   const editComment = () => {
     setIsEditing(!isEditing);
@@ -90,110 +106,101 @@ export const SingleComment = ({
 
   useEffect(() => {
     getUserById();
-    setDateCommentCreated(timeFromNow(commentData.dateCreated));
-    setCommentLikesInfo({
-      isLikedByCurrentUser: findCurrentUserLikesForComment(commentData.likes),
-      amountOfLikes: commentData.likes.length,
-    });
-    setEditedCommentText(commentData.text);
-  }, []);
+    setInitialStates();
+  }, [getUserById, setInitialStates]);
 
   return (
     <>
-      {creatorOfCommentData ? (
-        <div className="mb-4 flex flex-col">
-          <UserBar
-            creatorData={creatorOfCommentData}
-            dateCreated={dateCommentCreated}
-            likesInfo={commentLikesInfo}
-            putLike={setLikeForComment}
-          />
+      {!creatorOfCommentData && <Loader />}
 
-          {isEditing ? (
-            <>
-              <Textarea
-                id="editCommentField"
-                rows="2"
-                name="editComment"
-                placeholder="Leave a comment..."
-                value={editedCommentText}
-                onChange={handleEditingComment}
-              />
+      <div className="mb-4 flex flex-col">
+        <UserBar
+          creatorData={creatorOfCommentData}
+          dateCreated={dateCommentCreated}
+          likesInfo={commentLikesInfo}
+          putLike={setLikeForComment}
+        />
 
-              <div className="flex justify-end mb-1">
-                <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
-                  onClick={cancelEditing}
-                >
-                  Cancel
-                </Button>
+        {isEditing ? (
+          <>
+            <Textarea
+              id="editCommentField"
+              rows="2"
+              name="editComment"
+              placeholder="Leave a comment..."
+              value={editedCommentText}
+              onChange={handleEditingComment}
+            />
 
-                <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
-                  onClick={saveAndCancel}
-                >
-                  Save
-                </Button>
-              </div>
-            </>
-          ) : (
-            <p className="break-words text-left text-black mb-1 min-width-230">
-              {commentData.text}
-            </p>
-          )}
-          {currentUser?._id === commentData.commentedBy && !isEditing ? (
-            <>
-              <div className="flex justify-between">
-                <Button
-                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white text-left lg:px-0 lg:py-0 mr-2"
-                  onClick={replyClicked}
-                  disabled={isReplied}
-                >
-                  Reply
-                </Button>
-
-                <div className="flex">
-                  <Button
-                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
-                    onClick={editComment}
-                  >
-                    Edit
-                  </Button>
-
-                  <Button
-                    className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
-                    onClick={() => deleteComment(commentData._id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </>
-          ) : (
-            <div className="text-start">
+            <div className="flex justify-end mb-1">
               <Button
                 className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
+                onClick={cancelEditing}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
+                onClick={saveAndCancel}
+              >
+                Save
+              </Button>
+            </div>
+          </>
+        ) : (
+          <p className="break-words text-left text-black mb-1 min-width-230">
+            {commentData.text}
+          </p>
+        )}
+        {currentUser?._id === commentData.commentedBy && !isEditing ? (
+          <>
+            <div className="flex justify-between">
+              <Button
+                className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white text-left lg:px-0 lg:py-0 mr-2"
                 onClick={replyClicked}
                 disabled={isReplied}
               >
                 Reply
               </Button>
-            </div>
-          )}
-          {isReplying ? (
-            <>
-              <div className="w-full">
-                <CommentsSection
-                  commentIdToReply={commentData._id}
-                  isReplied={true}
-                />
+
+              <div className="flex">
+                <Button
+                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
+                  onClick={editComment}
+                >
+                  Edit
+                </Button>
+
+                <Button
+                  className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0"
+                  onClick={() => deleteComment(commentData._id)}
+                >
+                  Delete
+                </Button>
               </div>
-            </>
-          ) : null}
-        </div>
-      ) : (
-        <Loader />
-      )}
+            </div>
+          </>
+        ) : (
+          <div className="text-start">
+            <Button
+              className="px-0 py-0 bg-white text-gray-400 text-xs hover:bg-white lg:px-0 lg:py-0 mr-2"
+              onClick={replyClicked}
+              disabled={isReplied}
+            >
+              Reply
+            </Button>
+          </div>
+        )}
+        {isReplying && (
+          <div className="w-full">
+            <CommentsSection
+              commentIdToReply={commentData._id}
+              isReplied={true}
+            />
+          </div>
+        )}
+      </div>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router';
 
@@ -15,26 +15,30 @@ export const SinglePostPage = () => {
   const params = useParams();
   const navigate = useNavigate();
 
-  const getNecessaryPost = async () => {
+  const getNecessaryPost = useCallback(async () => {
     try {
       const response = await axios.get(`/posts/${params.postId}`);
+      if (!response.data) return;
       setPostToRender(response.data);
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [params.postId]);
 
-  const deletePostById = async () => {
+  const deletePostById = useCallback(async () => {
     try {
       await axios.delete(`/posts/${postToRender._id}`);
-      console.log('Successfully deleted');
       navigate(`/profile/${currentUser._id}/${currentUser.name}`);
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [currentUser?._id, currentUser?.name, navigate, postToRender?._id]);
 
   // проверка того, кто создал пост. Если открытый пост создал залогиненый юзер, то далее будут отображены кнопки редактирования и удаления
-  const checkCreatorOfPost = () => {
-    if (currentUser?._id === postToRender?.postedBy) return true;
-    return false;
-  };
+  const IsCreatorCurrentUser = useMemo(
+    () => !!(currentUser?._id === postToRender?.postedBy),
+    [currentUser?._id, postToRender?.postedBy]
+  );
 
   const isShowedComments = () => {
     setShowComments(!showComments);
@@ -42,7 +46,7 @@ export const SinglePostPage = () => {
 
   useEffect(() => {
     getNecessaryPost();
-  }, []);
+  }, [getNecessaryPost]);
 
   return (
     <>
@@ -53,7 +57,7 @@ export const SinglePostPage = () => {
               post={postToRender}
               isSinglePostPage={true}
               deletePostById={deletePostById}
-              IsCreatorCurrentUser={checkCreatorOfPost()}
+              IsCreatorCurrentUser={IsCreatorCurrentUser}
             />
           </div>
           <div className="flex justify-center min-width-640">

@@ -1,23 +1,11 @@
 export const getItem = (key) => {
-  try {
-    return JSON.parse(localStorage.getItem(key));
-  } catch (error) {
-    return null;
-  }
+  return JSON.parse(localStorage.getItem(key));
 };
 
 export const setItem = (key, data) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.log(error);
-  }
+  localStorage.setItem(key, JSON.stringify(data));
 };
 
 export const removeItem = (key) => {
-  try {
-    localStorage.removeItem(key);
-  } catch (error) {
-    console.log(error);
-  }
+  localStorage.removeItem(key);
 };

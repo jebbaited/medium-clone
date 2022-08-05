@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
@@ -27,9 +27,10 @@ export const Post = (props) => {
   const dispatch = useDispatch();
 
   // Используется для того, чтобы получить необходимые данные создателя поста для дальнейшего рендера
-  const getCreatorNameById = async (id) => {
+  const getCreatorNameById = useCallback(async (id) => {
     try {
       const response = await axios.get(`/users/${id}`);
+      if (!response.data) return;
       setCreatorData({
         name: response.data.name,
         avatar: imgSrc(response.data),
@@ -38,42 +39,45 @@ export const Post = (props) => {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const putLikeForPost = async () => {
-    if (currentUser) {
-      try {
-        await axios.put(`/posts/like/${props.post._id}`);
-        await getPostById();
-      } catch (error) {}
-    }
-  };
+  }, []);
 
   // Для того, чтобы заново получить пост, которому был поставлен лайк и обновить их количество
-  const getPostById = async () => {
+  const getPostById = useCallback(async () => {
     try {
       const response = await axios.get(`/posts/${props.post._id}`);
+      if (!response.data) return;
       setPostLikesInfo({
         isLikedByCurrentUser: !postLikesInfo.isLikedByCurrentUser,
         amountOfLikes: response.data.likes.length,
       });
       dispatch(reSaveOnePost(response.data));
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch, postLikesInfo.isLikedByCurrentUser, props.post._id]);
+
+  const putLikeForPost = useCallback(async () => {
+    if (currentUser) {
+      try {
+        await axios.put(`/posts/like/${props.post._id}`);
+        await getPostById();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, [currentUser, getPostById, props.post._id]);
 
   // Узнать поставил ли текущий(залогиненый) пользователь лайк посту
-  const findCurrentUserLikesForPosts = (likesOfAllUsers) => {
-    if (currentUser) {
-      const isLiked = likesOfAllUsers.includes(currentUser._id);
-      return isLiked;
-    }
-    return false;
-  };
+  const findCurrentUserLikesForPosts = useCallback(
+    (likesOfAllUsers) =>
+      currentUser && likesOfAllUsers.includes(currentUser._id),
+    [currentUser]
+  );
 
   // если компонент вызван для рендера открытого поста, то сохранаяю этот пост в сторе, чтобы вывести дефолтные значения инпутов
-  const isSinglePostRender = () => {
+  const isSinglePostRender = useCallback(() => {
     if (props.isSinglePostPage) dispatch(saveSinglePost(props.post));
-  };
+  }, [dispatch, props.isSinglePostPage, props.post]);
 
   useEffect(() => {
     if (props.post.postedBy) getCreatorNameById(props.post.postedBy);
@@ -83,7 +87,12 @@ export const Post = (props) => {
       amountOfLikes: props.post.likes.length,
     });
     isSinglePostRender();
-  }, []);
+  }, [
+    getCreatorNameById,
+    isSinglePostRender,
+    findCurrentUserLikesForPosts,
+    props.post,
+  ]);
 
   return (
     <>
@@ -97,7 +106,7 @@ export const Post = (props) => {
               putLike={putLikeForPost}
             />
           </div>
-          {props.IsCreatorCurrentUser ? (
+          {props.IsCreatorCurrentUser && (
             <div className="flex w-1/2 mt-2">
               <Link to={`/post/editor/${props.post._id}`}>
                 <Button className="mr-4 px-4 py-2 text-sm">Edit Post</Button>
@@ -109,11 +118,12 @@ export const Post = (props) => {
                 className="mb-0 px-4 py-2 w-28 text-sm"
               />
             </div>
-          ) : null}
+          )}
 
           <img
             src={postImgSrc(props.post.image)}
             className="mt-4 medium-post-image"
+            alt="nothing"
           />
           <div className="w-1/2 break-words">
             <div className="flex flex-col items-start text-left">

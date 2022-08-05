@@ -20,18 +20,23 @@ export const PaginationBar = ({
 
   const pathToUserProfile = `/profile/${params.userId}/${params.name}`;
 
-  let pageToDisplay = params.pageNumber || 1;
+  const pageToDisplay = params.pageNumber || 1;
 
   useEffect(() => {
     if (params.pageNumber > lastPageNumber && lastPageNumber) {
-      pageToDisplay = lastPageNumber;
       navigate(
         isNavigateToProfile
           ? `${pathToUserProfile}/page-${lastPageNumber}`
           : `/page-${lastPageNumber}`
       );
     }
-  }, [lastPageNumber]);
+  }, [
+    lastPageNumber,
+    isNavigateToProfile,
+    navigate,
+    params.pageNumber,
+    pathToUserProfile,
+  ]);
 
   return (
     <div className="flex items-center">

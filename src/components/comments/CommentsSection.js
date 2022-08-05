@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
@@ -17,22 +17,28 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
 
   const currentUser = useSelector((state) => state.user.user);
 
-  const getAllComments = async () => {
+  const handleComments = useCallback(
+    (data) => {
+      const commentsToSet = data.filter(
+        (comment) => comment.followedCommentID === (commentIdToReply || null)
+      );
+
+      setComments(commentsToSet.reverse());
+    },
+    [commentIdToReply]
+  );
+
+  const getAllComments = useCallback(async () => {
     try {
       const response = await axios.get(`/comments/post/${params.postId}`);
+      if (!response.data) return;
       handleComments(response.data);
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [handleComments, params.postId]);
 
-  const handleComments = (data) => {
-    const commentsToSet = commentIdToReply
-      ? data.filter((comment) => comment.followedCommentID === commentIdToReply)
-      : data.filter((comment) => comment.followedCommentID === null);
-
-    setComments(commentsToSet.reverse());
-  };
-
-  const createComment = async () => {
+  const createComment = useCallback(async () => {
     try {
       await axios.post(`/comments/post/${params.postId}`, {
         text: newCommentText,
@@ -43,23 +49,33 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
     } catch (error) {
       setCommentError(error.response.data.error[0].message);
     }
-  };
+  }, [commentIdToReply, getAllComments, newCommentText, params.postId]);
 
-  const deleteComment = async (commentId) => {
-    try {
-      await axios.delete(`/comments/${commentId}`);
-      await getAllComments();
-    } catch (error) {}
-  };
+  const deleteComment = useCallback(
+    async (commentId) => {
+      try {
+        await axios.delete(`/comments/${commentId}`);
+        await getAllComments();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [getAllComments]
+  );
 
-  const saveChangesAfterEditing = async (commentId, text) => {
-    try {
-      await axios.patch(`/comments/${commentId}`, {
-        text: text,
-      });
-      await getAllComments();
-    } catch (error) {}
-  };
+  const saveChangesAfterEditing = useCallback(
+    async (commentId, text) => {
+      try {
+        await axios.patch(`/comments/${commentId}`, {
+          text,
+        });
+        await getAllComments();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [getAllComments]
+  );
 
   const replyToComment = () => {
     getAllComments();
@@ -76,18 +92,23 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
 
   useEffect(() => {
     getAllComments();
-  }, []);
+  }, [getAllComments]);
 
   return (
     <>
-      {comments ? (
+      {!comments ? (
+        <Loader />
+      ) : (
         <>
-          {' '}
           <div className="flex justify-center">
             <div className={isReplied ? 'w-full' : 'w-1/2'}>
               {currentUser && (
                 <div className="flex flex justify-start w-full mt-5 mb-3">
-                  <img src={imgSrc(currentUser)} className="small-avatar" />
+                  <img
+                    src={imgSrc(currentUser)}
+                    className="small-avatar"
+                    alt="nothing"
+                  />
                   <div className="w-full">
                     <Textarea
                       id="commentField"
@@ -134,30 +155,26 @@ export const CommentsSection = ({ commentIdToReply, isReplied }) => {
                 }`}
               >
                 <div className="flex flex-col items-left w-full">
-                  {comments?.length ? (
-                    <>
-                      {comments?.map((comment) => (
-                        <div key={comment._id} className="mb-3">
-                          <SingleComment
-                            commentData={comment}
-                            deleteComment={deleteComment}
-                            saveChanges={saveChangesAfterEditing}
-                            replyToComment={replyToComment}
-                            isReplied={isReplied}
-                          />
-                        </div>
-                      ))}
-                    </>
-                  ) : (
+                  {!comments?.length && (
                     <p className="text-left">There is no comments yet...</p>
                   )}
+
+                  {comments?.map((comment) => (
+                    <div key={comment._id} className="mb-3">
+                      <SingleComment
+                        commentData={comment}
+                        deleteComment={deleteComment}
+                        saveChanges={saveChangesAfterEditing}
+                        replyToComment={replyToComment}
+                        isReplied={isReplied}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </>
-      ) : (
-        <Loader />
       )}
     </>
   );

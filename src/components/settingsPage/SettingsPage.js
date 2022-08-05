@@ -11,6 +11,7 @@ import { Loader } from '../../UI/Loader';
 import validateRules from '../../helpers/validateRules';
 import { removeItem } from '../../helpers/persistanceStorage';
 import { clearUser, saveUser } from '../../store/userSlice';
+import { useCallback } from 'react';
 
 export const SettingsPage = () => {
   const user = useSelector((state) => state.user.user);
@@ -32,7 +33,8 @@ export const SettingsPage = () => {
 
   const onSubmit = async (formData) => {
     await updateUserInfo(formData);
-    if (formData.avatar.length) await setAvatar(formData.avatar);
+    if (!formData.avatar.length) return;
+    await setAvatar(formData.avatar);
     navigate(`/profile/${user._id}/${user.name}`);
   };
 
@@ -45,15 +47,16 @@ export const SettingsPage = () => {
         profession: '',
         details: data.details,
       });
-      if (response.data) {
-        dispatch(saveUser(response.data));
-      }
-    } catch (error) {}
+      if (!response.data) return;
+      dispatch(saveUser(response.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const setAvatar = async (files) => {
     const file = files[0];
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('avatar', file);
     try {
       const response = await axios.put(`/users/upload/${user._id}`, formData, {
@@ -61,49 +64,57 @@ export const SettingsPage = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      if (response.data) {
-        dispatch(saveUser(response.data));
-      }
-    } catch (error) {}
+      if (!response.data) return;
+      dispatch(saveUser(response.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     removeItem('accessToken');
     dispatch(clearUser(null));
     navigate('/login');
-  };
-
-  const deleteUser = async () => {
-    await deleteAllUserPosts();
-    try {
-      await axios.delete(`/users/${user._id}`);
-      removeItem('accessToken');
-      dispatch(clearUser(null));
-      navigate('/');
-    } catch (error) {}
-  };
+  }, [dispatch, navigate]);
 
   // удалить все посты юзера вместе с его профилем
-  const deleteAllUserPosts = async () => {
+  const deleteAllUserPosts = useCallback(async () => {
     try {
       const response = await axios.get('/posts', {
         params: {
           postedBy: user._id,
         },
       });
-      response.data.data.map((post) => {
+      if (!response.data) return;
+      response.data.data.forEach((post) => {
         deletePost(post._id);
       });
-    } catch (error) {}
-  };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user._id]);
+
+  const deleteUser = useCallback(async () => {
+    await deleteAllUserPosts();
+    try {
+      await axios.delete(`/users/${user._id}`);
+      removeItem('accessToken');
+      dispatch(clearUser(null));
+      navigate('/');
+    } catch (error) {
+      console.log(error);
+    }
+  }, [deleteAllUserPosts, dispatch, navigate, user._id]);
 
   const deletePost = async (postId) => {
     try {
       await axios.delete(`/posts/${postId}`);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const buttonDisabled = Object.keys(errors).length ? true : false;
+  const buttonDisabled = !!Object.keys(errors).length;
 
   return (
     <>

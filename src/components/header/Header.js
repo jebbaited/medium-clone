@@ -43,7 +43,11 @@ export const Header = () => {
                 isActive ? 'flex active-link' : 'flex header-text'
               }
             >
-              <img src={imgSrc(currentUser)} className="small-avatar" />
+              <img
+                src={imgSrc(currentUser)}
+                className="small-avatar"
+                alt="nothing"
+              />
               {currentUser.name}
             </NavLink>
           </div>

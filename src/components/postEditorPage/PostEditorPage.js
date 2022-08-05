@@ -24,7 +24,6 @@ export const PostEditorPage = () => {
   } = useForm({
     mode: 'onChange',
     defaultValues: {
-      // image: new File([currentPost.image], ),
       title: currentPost.title,
       description: currentPost.description,
       text: currentPost.fullText,
@@ -35,7 +34,8 @@ export const PostEditorPage = () => {
 
   const onSubmit = async (formData) => {
     await updatePost(formData);
-    if (formData.image.length) await updatePostImage(formData.image);
+    if (!formData.image.length) return;
+    await updatePostImage(formData.image);
   };
 
   const updatePost = async (data) => {
@@ -53,7 +53,7 @@ export const PostEditorPage = () => {
 
   const updatePostImage = async (files) => {
     const file = files[0];
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('image', file);
     try {
       await axios.put(`/posts/upload/${postId}`, formData, {
@@ -66,7 +66,7 @@ export const PostEditorPage = () => {
     }
   };
 
-  const buttonDisabled = Object.keys(errors).length ? true : false;
+  const buttonDisabled = !!Object.keys(errors).length;
 
   return (
     <div className="flex justify-center mt-6 min-width-640">

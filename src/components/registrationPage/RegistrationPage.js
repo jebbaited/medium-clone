@@ -33,13 +33,14 @@ export const RegistrationPage = () => {
         profession: '',
         details: '',
       });
-      if (response.data) navigate('/login');
+      if (!response.data) return;
+      navigate('/login');
     } catch (error) {
       setErrorFromServer(error.response.data.error);
     }
   };
 
-  const buttonDisabled = Object.keys(errors).length ? true : false;
+  const buttonDisabled = !!Object.keys(errors).length;
 
   return (
     <div className="flex flex-col items-center min-width-640">
