@@ -2,45 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
-    h1 {
-      @apply text-2xl mb-2 sm:text-2xl lg:text-4xl  
-    }
-    h2 {
-      @apply text-base lg:text-xl;
-    }
-    p {
-      @apply text-gray-400 text-sm sm:text-sm lg:text-base;
-    }
+  h1 {
+    @apply text-2xl mb-2 sm:text-2xl lg:text-4xl dark:text-white;
   }
+  h2 {
+    @apply text-base lg:text-xl dark:text-gray-300;
+  }
+  p {
+    @apply text-gray-400 text-sm sm:text-sm lg:text-base;
+  }
+}
 
-  @layer components {
-    .header-text {
-      @apply block inline-block text-gray-400 hover:text-gray-800 mr-4
-    }
-    .active-link {
-      @apply header-text text-black font-medium
-    }
-    .error-from-server {
-      @apply text-red-500 font-bold
-    }
-    .small-avatar {
-      @apply rounded-full object-cover h-6 w-6 mr-1
-    }
-    .medium-avatar {
-      @apply rounded-full object-cover h-8 w-8 mr-1 min-w-[32px] lg:h-12 lg:w-12 lg:min-w-[48px]
-    }
-    .medium-post-image {
-      @apply object-cover h-1/6 w-1/6
-    }
-    .likes-button {
-      @apply text-emerald-500 text-sm border border-emerald-500 py-1 px-2 w-12 rounded-md hover:text-white hover:bg-emerald-500 lg:w-16
-    }
-    .min-width-230 {
-      @apply min-w-[230px]
-    }
-    .min-width-640 {
-      @apply min-w-[640px]
-    }
+@layer components {
+  .header-text {
+    @apply block inline-block text-gray-400 hover:text-gray-800 mr-4;
   }
+  .active-link {
+    @apply header-text text-black font-medium;
+  }
+  .error-from-server {
+    @apply text-red-500 font-bold;
+  }
+  .small-avatar {
+    @apply rounded-full object-cover h-6 w-6 mr-1;
+  }
+  .medium-avatar {
+    @apply rounded-full object-cover h-8 w-8 mr-1 min-w-[32px] lg:h-12 lg:w-12 lg:min-w-[48px];
+  }
+  .medium-post-image {
+    @apply object-cover h-1/6 w-1/6;
+  }
+  .likes-button {
+    @apply text-emerald-500 text-sm border border-emerald-500 py-1 px-2 w-12 rounded-md hover:text-white hover:bg-emerald-500 lg:w-16;
+  }
+  .min-width-230 {
+    @apply min-w-[230px];
+  }
+  .min-width-640 {
+    @apply min-w-[640px];
+  }
+}
